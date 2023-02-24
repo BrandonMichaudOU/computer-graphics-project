@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Implementation-Title: cg-project
+Implementation-Version: 1.2.1
+provider: tribe7.net
+permissions: all-permissions
+codebase: *
+Main-Class: Project
+
