@@ -40,6 +40,10 @@ public final class Application
 	private int				k = 0;			// Animation counter
 	private TextRenderer		renderer;
 
+    private Graph graph = new Graph();
+
+    private boolean init = false;
+
 	private float				defaultLine = 1.0f;		// normal thickness
 	private float				edgeLine = 2.5f;		// edge thickness
 
@@ -151,6 +155,37 @@ public final class Application
 	private void	update(GLAutoDrawable drawable)
 	{
 		k++;							// Advance animation counter
+        if (!init) {
+            init = true;
+            ArrayList<Node> nodes = new ArrayList<>();
+            nodes.add(new Node(340, 680));
+            nodes.add(new Node(640, 680));
+            nodes.add(new Node(940, 680));
+            nodes.add(new Node(40, 360));
+            nodes.add(new Node(490, 360));
+            nodes.add(new Node(1240, 360));
+            nodes.add(new Node(340, 40));
+            nodes.add(new Node(640, 40));
+            nodes.add(new Node(940, 40));
+
+            ArrayList<Edge> edges = new ArrayList<>();
+            edges.add(new Edge(nodes.get(0), nodes.get(1)));
+            edges.add(new Edge(nodes.get(0), nodes.get(3)));
+            edges.add(new Edge(nodes.get(0), nodes.get(6)));
+            edges.add(new Edge(nodes.get(1), nodes.get(2)));
+            edges.add(new Edge(nodes.get(1), nodes.get(4)));
+            edges.add(new Edge(nodes.get(1), nodes.get(8)));
+            edges.add(new Edge(nodes.get(2), nodes.get(5)));
+            edges.add(new Edge(nodes.get(2), nodes.get(8)));
+            edges.add(new Edge(nodes.get(3), nodes.get(6)));
+            edges.add(new Edge(nodes.get(4), nodes.get(6)));
+            edges.add(new Edge(nodes.get(4), nodes.get(7)));
+            edges.add(new Edge(nodes.get(5), nodes.get(8)));
+            edges.add(new Edge(nodes.get(6), nodes.get(7)));
+            edges.add(new Edge(nodes.get(7), nodes.get(8)));
+
+            graph = new Graph(nodes, edges);
+        }
 	}
 
 	// Render the scene model and display the current animation frame.
@@ -162,10 +197,9 @@ public final class Application
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);			// Clear the buffer
 
 		setProjection(gl);							// Use screen coordinates
-
-		gl.glLineWidth(defaultLine);				// set the line width to the default
-        setColor(gl, 255, 0, 0); // Red
-        fillCircle(gl, 640, 360, 25);
+        
+        drawEdges(gl);
+        drawNodes(gl);
 	}
 
 	//**********************************************************************
@@ -190,6 +224,29 @@ public final class Application
 		gl.glLoadIdentity();						// Set to identity matrix
 		glu.gluOrtho2D(0.0f, 1280.0f, 0.0f, 720.0f);// 2D translate and scale
 	}
+
+    //**********************************************************************
+	// Private Methods (Graph Functions)
+	//**********************************************************************
+    private void drawEdges(GL2 gl) {
+        setColor(gl, 0, 0, 0);
+        gl.glLineWidth(edgeLine);				// set the line width to the default
+        gl.glBegin(GL.GL_LINES);
+        for (Edge e: graph.edges) {
+            gl.glVertex2d(e.node1.x, e.node1.y);
+            gl.glVertex2d(e.node2.x, e.node2.y);
+        }
+        gl.glEnd();
+        gl.glLineWidth(defaultLine);
+    }
+
+    private void drawNodes(GL2 gl) {
+        setColor(gl, 255, 0, 0);
+        for (Node n: graph.nodes) {
+            fillCircle(gl, n.x, n.y, 25);
+            edgeCircle(gl, n.x, n.y, 25);
+        }
+    }
 
 	//**********************************************************************
 	// Private Methods (Convenience Functions)
@@ -256,27 +313,17 @@ public final class Application
 	}
 
 	// fills a circle defined by the center and radius
-	private void fillCircle(GL2 gl, int cx, int cy, double r) {
-		gl.glBegin(GL2.GL_POLYGON);
-		for (int i = 0; i < 30; i++) {
-			double a = i * 2.0 * Math.PI / 30;
-			gl.glVertex2d(cx + (r * Math.cos(a)), cy + (r * Math.sin(a)));
-		}
-		gl.glEnd();
+	private void fillCircle(GL2 gl, double cx, double cy, double r) {
+		fillEllipse(gl, cx, cy, r, r);
 	}
 
 	// edges a circle defined by the center and radius
-	private void edgeCircle(GL2 gl, int cx, int cy, double r) {
-		gl.glBegin(GL.GL_LINE_LOOP);
-		for (int i = 0; i < 30; i++) {
-			double a = i * 2.0 * Math.PI / 30;
-			gl.glVertex2d(cx + (r * Math.cos(a)), cy + (r * Math.sin(a)));
-		}
-		gl.glEnd();
+	private void edgeCircle(GL2 gl, double cx, double cy, double r) {
+		edgeEllipse(gl, cx, cy, r, r);
 	}
 
 	// fills an ellipse defined by the center, x radius, and y radius
-	private void fillEllipse(GL2 gl, int cx, int cy, double a, double b) {
+	private void fillEllipse(GL2 gl, double cx, double cy, double a, double b) {
 		gl.glBegin(GL2.GL_POLYGON);
 		for (int i = 0; i < 30; i++) {
 			double angle = i * 2.0 * Math.PI / 30;
@@ -286,7 +333,7 @@ public final class Application
 	}
 
 	// edges an ellipse defined by the center, x radius, and y radius
-	private void edgeEllipse(GL2 gl, int cx, int cy, double a, double b) {
+	private void edgeEllipse(GL2 gl, double cx, double cy, double a, double b) {
 		gl.glBegin(GL.GL_LINE_LOOP);
 		for (int i = 0; i < 30; i++) {
 			double angle = i * 2.0 * Math.PI / 30;
