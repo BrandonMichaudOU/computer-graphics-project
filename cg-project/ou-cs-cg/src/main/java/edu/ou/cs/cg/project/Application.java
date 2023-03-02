@@ -157,34 +157,31 @@ public final class Application
 		k++;							// Advance animation counter
         if (!init) {
             init = true;
-            ArrayList<Node> nodes = new ArrayList<>();
-            nodes.add(new Node(340, 680));
-            nodes.add(new Node(640, 680));
-            nodes.add(new Node(940, 680));
-            nodes.add(new Node(40, 360));
-            nodes.add(new Node(490, 360));
-            nodes.add(new Node(1240, 360));
-            nodes.add(new Node(340, 40));
-            nodes.add(new Node(640, 40));
-            nodes.add(new Node(940, 40));
-
-            ArrayList<Edge> edges = new ArrayList<>();
-            edges.add(new Edge(nodes.get(0), nodes.get(1)));
-            edges.add(new Edge(nodes.get(0), nodes.get(3)));
-            edges.add(new Edge(nodes.get(0), nodes.get(6)));
-            edges.add(new Edge(nodes.get(1), nodes.get(2)));
-            edges.add(new Edge(nodes.get(1), nodes.get(4)));
-            edges.add(new Edge(nodes.get(1), nodes.get(8)));
-            edges.add(new Edge(nodes.get(2), nodes.get(5)));
-            edges.add(new Edge(nodes.get(2), nodes.get(8)));
-            edges.add(new Edge(nodes.get(3), nodes.get(6)));
-            edges.add(new Edge(nodes.get(4), nodes.get(6)));
-            edges.add(new Edge(nodes.get(4), nodes.get(7)));
-            edges.add(new Edge(nodes.get(5), nodes.get(8)));
-            edges.add(new Edge(nodes.get(6), nodes.get(7)));
-            edges.add(new Edge(nodes.get(7), nodes.get(8)));
-
-            graph = new Graph(nodes, edges);
+			//adding default nodes
+			graph.addNode(340, 680);
+			graph.addNode(640, 680);
+			graph.addNode(940, 680);
+			graph.addNode(40, 360);
+			graph.addNode(490, 360);
+			graph.addNode(1240, 360);
+			graph.addNode(340, 40);
+			graph.addNode(640,40);
+			graph.addNode(940,40);
+			//adding default edges
+			graph.addEdge(0, 1);
+			graph.addEdge(0, 3);
+			graph.addEdge(0, 6);
+			graph.addEdge(1, 2);
+			graph.addEdge(1,4);
+			graph.addEdge(1, 8);
+			graph.addEdge(2, 5);
+			graph.addEdge(2, 8);
+			graph.addEdge(3,6);
+			graph.addEdge(4, 6);
+			graph.addEdge(4, 7);
+			graph.addEdge(5, 8);
+			graph.addEdge(6, 7);
+			graph.addEdge(7, 8);
         }
 	}
 
