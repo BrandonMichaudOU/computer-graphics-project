@@ -16,8 +16,8 @@ public class Graph {
         this.edges = new ArrayList<>();
     }
 
-    public void addNode(int x, int y){
-        this.nodes.add(new Node(x, y));
+    public void addNode(double x, double y, double r){
+        this.nodes.add(new Node(x, y, r));
     }
 
     public void addEdge(int node1, int node2){

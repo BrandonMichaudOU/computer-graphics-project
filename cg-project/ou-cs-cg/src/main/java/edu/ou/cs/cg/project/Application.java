@@ -47,6 +47,8 @@ public final class Application
 	private float				defaultLine = 1.0f;		// normal thickness
 	private float				edgeLine = 2.5f;		// edge thickness
 
+	private double 				radius = 25;
+
 	//**********************************************************************
 	// Main
 	//**********************************************************************
@@ -163,15 +165,15 @@ public final class Application
 
 	private void buildGraphOne() {
 		//adding default nodes
-		graph.addNode(340, 680);
-		graph.addNode(640, 680);
-		graph.addNode(940, 680);
-		graph.addNode(40, 360);
-		graph.addNode(490, 360);
-		graph.addNode(1240, 360);
-		graph.addNode(340, 40);
-		graph.addNode(640,40);
-		graph.addNode(940,40);
+		graph.addNode(340, 680, radius);
+		graph.addNode(640, 680, radius);
+		graph.addNode(940, 680, radius);
+		graph.addNode(40, 360, radius);
+		graph.addNode(490, 360, radius);
+		graph.addNode(1240, 360, radius);
+		graph.addNode(340, 40, radius);
+		graph.addNode(640,40, radius);
+		graph.addNode(940,40, radius);
 		//adding default edges
 		graph.addEdge(0, 1);
 		graph.addEdge(0, 3);
