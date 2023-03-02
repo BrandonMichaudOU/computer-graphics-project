@@ -20,7 +20,7 @@ public class Graph {
         this.nodes.add(new Node(x, y));
     }
 
-    public void addEdge(int x, int y){
-        this.edges.add(new Edge(nodes.get(x), nodes.get(y)));
+    public void addEdge(int node1, int node2){
+        this.edges.add(new Edge(nodes.get(node1), nodes.get(node2)));
     }
 }
