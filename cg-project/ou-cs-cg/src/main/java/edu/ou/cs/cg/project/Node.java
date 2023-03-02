@@ -14,7 +14,7 @@ public class Node {
         this.end = false;
     }
 
-    public Node(double x, double y, boolean start, boolean end) {
+    public Node(double x, double y, double r, boolean start, boolean end) {
         this.x = x;
         this.y = y;
         this.start = start;
