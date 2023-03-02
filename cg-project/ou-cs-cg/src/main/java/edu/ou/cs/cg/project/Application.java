@@ -157,32 +157,36 @@ public final class Application
 		k++;							// Advance animation counter
         if (!init) {
             init = true;
-			//adding default nodes
-			graph.addNode(340, 680);
-			graph.addNode(640, 680);
-			graph.addNode(940, 680);
-			graph.addNode(40, 360);
-			graph.addNode(490, 360);
-			graph.addNode(1240, 360);
-			graph.addNode(340, 40);
-			graph.addNode(640,40);
-			graph.addNode(940,40);
-			//adding default edges
-			graph.addEdge(0, 1);
-			graph.addEdge(0, 3);
-			graph.addEdge(0, 6);
-			graph.addEdge(1, 2);
-			graph.addEdge(1,4);
-			graph.addEdge(1, 8);
-			graph.addEdge(2, 5);
-			graph.addEdge(2, 8);
-			graph.addEdge(3,6);
-			graph.addEdge(4, 6);
-			graph.addEdge(4, 7);
-			graph.addEdge(5, 8);
-			graph.addEdge(6, 7);
-			graph.addEdge(7, 8);
+            buildGraphOne();
         }
+	}
+
+	private void buildGraphOne() {
+		//adding default nodes
+		graph.addNode(340, 680);
+		graph.addNode(640, 680);
+		graph.addNode(940, 680);
+		graph.addNode(40, 360);
+		graph.addNode(490, 360);
+		graph.addNode(1240, 360);
+		graph.addNode(340, 40);
+		graph.addNode(640,40);
+		graph.addNode(940,40);
+		//adding default edges
+		graph.addEdge(0, 1);
+		graph.addEdge(0, 3);
+		graph.addEdge(0, 6);
+		graph.addEdge(1, 2);
+		graph.addEdge(1,4);
+		graph.addEdge(1, 8);
+		graph.addEdge(2, 5);
+		graph.addEdge(2, 8);
+		graph.addEdge(3,6);
+		graph.addEdge(4, 6);
+		graph.addEdge(4, 7);
+		graph.addEdge(5, 8);
+		graph.addEdge(6, 7);
+		graph.addEdge(7, 8);
 	}
 
 	// Render the scene model and display the current animation frame.
