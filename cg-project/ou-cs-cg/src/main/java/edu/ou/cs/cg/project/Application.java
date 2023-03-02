@@ -157,35 +157,39 @@ public final class Application
 		k++;							// Advance animation counter
         if (!init) {
             init = true;
-            ArrayList<Node> nodes = new ArrayList<>();
-            nodes.add(new Node(340, 680));
-            nodes.add(new Node(640, 680));
-            nodes.add(new Node(940, 680));
-            nodes.add(new Node(40, 360));
-            nodes.add(new Node(490, 360));
-            nodes.add(new Node(1240, 360));
-            nodes.add(new Node(340, 40));
-            nodes.add(new Node(640, 40));
-            nodes.add(new Node(940, 40));
-
-            ArrayList<Edge> edges = new ArrayList<>();
-            edges.add(new Edge(nodes.get(0), nodes.get(1)));
-            edges.add(new Edge(nodes.get(0), nodes.get(3)));
-            edges.add(new Edge(nodes.get(0), nodes.get(6)));
-            edges.add(new Edge(nodes.get(1), nodes.get(2)));
-            edges.add(new Edge(nodes.get(1), nodes.get(4)));
-            edges.add(new Edge(nodes.get(1), nodes.get(8)));
-            edges.add(new Edge(nodes.get(2), nodes.get(5)));
-            edges.add(new Edge(nodes.get(2), nodes.get(8)));
-            edges.add(new Edge(nodes.get(3), nodes.get(6)));
-            edges.add(new Edge(nodes.get(4), nodes.get(6)));
-            edges.add(new Edge(nodes.get(4), nodes.get(7)));
-            edges.add(new Edge(nodes.get(5), nodes.get(8)));
-            edges.add(new Edge(nodes.get(6), nodes.get(7)));
-            edges.add(new Edge(nodes.get(7), nodes.get(8)));
-
-            graph = new Graph(nodes, edges);
+            buildGraphOne();
         }
+	}
+
+	private void buildGraphOne() {
+		ArrayList<Node> nodes = new ArrayList<>();
+		nodes.add(new Node(340, 680));
+		nodes.add(new Node(640, 680));
+		nodes.add(new Node(940, 680));
+		nodes.add(new Node(40, 360));
+		nodes.add(new Node(490, 360));
+		nodes.add(new Node(1240, 360));
+		nodes.add(new Node(340, 40));
+		nodes.add(new Node(640, 40));
+		nodes.add(new Node(940, 40));
+
+		ArrayList<Edge> edges = new ArrayList<>();
+		edges.add(new Edge(nodes.get(0), nodes.get(1)));
+		edges.add(new Edge(nodes.get(0), nodes.get(3)));
+		edges.add(new Edge(nodes.get(0), nodes.get(6)));
+		edges.add(new Edge(nodes.get(1), nodes.get(2)));
+		edges.add(new Edge(nodes.get(1), nodes.get(4)));
+		edges.add(new Edge(nodes.get(1), nodes.get(8)));
+		edges.add(new Edge(nodes.get(2), nodes.get(5)));
+		edges.add(new Edge(nodes.get(2), nodes.get(8)));
+		edges.add(new Edge(nodes.get(3), nodes.get(6)));
+		edges.add(new Edge(nodes.get(4), nodes.get(6)));
+		edges.add(new Edge(nodes.get(4), nodes.get(7)));
+		edges.add(new Edge(nodes.get(5), nodes.get(8)));
+		edges.add(new Edge(nodes.get(6), nodes.get(7)));
+		edges.add(new Edge(nodes.get(7), nodes.get(8)));
+
+		graph = new Graph(nodes, edges);
 	}
 
 	// Render the scene model and display the current animation frame.
