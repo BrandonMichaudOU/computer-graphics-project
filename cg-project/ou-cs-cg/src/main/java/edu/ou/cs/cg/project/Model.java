@@ -24,7 +24,8 @@ public final class Model
 	private final View					view;
 
 	// Model variables
-	Graph graph;
+	private Graph graph;
+    private List<Edge> bfs;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -36,6 +37,7 @@ public final class Model
 
 		// Initialize user-adjustable variables (with reasonable default values)
 		graph = new Graph();
+        bfs = null;
 	}
 
 	//**********************************************************************
@@ -52,16 +54,45 @@ public final class Model
 		return graph.getEdges();
 	}
 
+    public List<Edge>   getBFS()
+    {
+        return bfs;
+    }
+
 	//**********************************************************************
 	// Public Methods (Modify Variables)
 	//**********************************************************************
 
     public void addNodes(List<Node> nodes) {
-        graph.addNodes(nodes);
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.addNodes(nodes);
+			}
+		});
     }
 
 	public void addEdges(List<Edge> edges) {
-        graph.addEdges(edges);
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.addEdges(edges);
+			}
+		});
+    }
+
+    public void setStart(int idx) {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.setStart(idx);
+			}
+		});
+    }
+
+    public void BFS() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				bfs = graph.BFS();
+			}
+		});
     }
 
 	//**********************************************************************

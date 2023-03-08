@@ -199,6 +199,7 @@ public final class View
 		setProjection(gl);							// Use screen coordinates
         
         drawEdges(gl);
+        drawBFS(gl);
         drawNodes(gl);
 	}
 
@@ -250,6 +251,21 @@ public final class View
             Point2D.Double p = n.getPoint();
             fillCircle(gl, p.x, p.y, radius);
             edgeCircle(gl, p.x, p.y, radius);
+        }
+    }
+
+    private void drawBFS(GL2 gl) {
+        List<Edge> path = model.getBFS();
+        if (path != null) {
+            setColor(gl, 0, 255, 255);
+            gl.glLineWidth(edgeLine);				// set the line width to the default
+            gl.glBegin(GL.GL_LINES);
+            for (Edge e: path) {
+                gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
+                gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
+            }
+            gl.glEnd();
+            gl.glLineWidth(defaultLine);
         }
     }
 

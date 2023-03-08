@@ -51,7 +51,7 @@ public final class MouseHandler extends MouseAdapter
         int i = 0;
 		for (Node n: model.getNodes()) {
             if (n.isInNode(click.x, click.y)) {
-                model.graph.setStart(i);
+                model.setStart(i);
                 return;
             }
             ++i;

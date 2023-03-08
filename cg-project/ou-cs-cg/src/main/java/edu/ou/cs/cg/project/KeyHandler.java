@@ -46,7 +46,9 @@ public final class KeyHandler extends KeyAdapter
 	{
 		switch (e.getKeyCode())
 		{
-			
+			case KeyEvent.VK_ENTER:
+				model.BFS();
+				break;
 		}
 	}
 }

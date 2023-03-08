@@ -1,6 +1,7 @@
 package edu.ou.cs.cg.project;
 
 import java.awt.geom.Point2D;
+import java.util.Comparator;
 
 public class Node {
     private double x;
@@ -48,5 +49,13 @@ public class Node {
 
     public boolean isEnd() {
         return end;
+    }
+
+    public boolean equals(Node n) {
+        double alpha = 0.05;
+        if (Math.abs(n.x - this.x) <= alpha && Math.abs(n.y - this.y) <= alpha) {
+            return true;
+        }
+        return false;
     }
 }

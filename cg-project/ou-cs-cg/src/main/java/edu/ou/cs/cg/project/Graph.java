@@ -2,18 +2,15 @@ package edu.ou.cs.cg.project;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Graph {
     private ArrayList<Node> nodes;
     private ArrayList<Edge> edges;
     private int start = -1;
     private int end = -1;
-
-    public Graph(ArrayList<Node> nodes, ArrayList<Edge> edges) {
-        this.nodes = nodes;
-        this.edges = edges;
-    }
 
     public Graph() {
         this.nodes = new ArrayList<>();
@@ -57,5 +54,49 @@ public class Graph {
         }
         nodes.get(idx).toggleStart();
         start = idx;
+    }
+
+    public List<Edge> BFS() {
+        if (start == -1 || nodes.size() == 0) {
+            return null;
+        }
+        ArrayList<Edge> path = new ArrayList<>();
+
+        ArrayList<Node> seen = new ArrayList<>();
+        Queue<Node> q = new LinkedList<Node>();
+        q.add(nodes.get(start));
+        seen.add(nodes.get(start));
+        while (!q.isEmpty()) {
+            System.out.println("Q not empty");
+            Node n = q.poll();
+            for (Edge e: edges){
+                if (n.equals(e.getNode1())) {
+                    Node n2 = e.getNode2();
+                    if (!containsNode(seen, n2)) {
+                        q.add(n2);
+                        seen.add(n2);
+                        path.add(e);
+                    }
+                }
+                else if (n.equals(e.getNode2())) {
+                    Node n1 = e.getNode1();
+                    if (!containsNode(seen, n1)) {
+                        q.add(n1);
+                        seen.add(n1);
+                        path.add(e);
+                    }
+                }
+            }
+        }
+        return Collections.unmodifiableList(path);
+    }
+
+    private boolean containsNode(ArrayList<Node> arr, Node n) {
+        for (Node nod: arr) {
+            if (n.equals(nod)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
