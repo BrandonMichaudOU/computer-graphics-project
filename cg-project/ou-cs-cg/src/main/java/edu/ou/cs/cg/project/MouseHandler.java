@@ -47,7 +47,15 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseClicked(MouseEvent e)
 	{
-		
+        Point2D.Double click = model.translateScreenToScene(e.getPoint());
+        int i = 0;
+		for (Node n: model.getNodes()) {
+            if (n.isInNode(click.x, click.y)) {
+                model.graph.setStart(i);
+                return;
+            }
+            ++i;
+        }
 	}
 
 	public void		mousePressed(MouseEvent e)

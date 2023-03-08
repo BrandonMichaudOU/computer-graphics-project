@@ -7,8 +7,8 @@ import java.util.List;
 public class Graph {
     private ArrayList<Node> nodes;
     private ArrayList<Edge> edges;
-    private boolean start = false;
-    private boolean end = false;
+    private int start = -1;
+    private int end = -1;
 
     public Graph(ArrayList<Node> nodes, ArrayList<Edge> edges) {
         this.nodes = nodes;
@@ -48,7 +48,14 @@ public class Graph {
         }
     }
 
-    public void setStart(Node n) {
-
+    public void setStart(int idx) {
+        if (start == idx) {
+            return;
+        }
+        if (start != -1) {
+            nodes.get(start).toggleStart();
+        }
+        nodes.get(idx).toggleStart();
+        start = idx;
     }
 }

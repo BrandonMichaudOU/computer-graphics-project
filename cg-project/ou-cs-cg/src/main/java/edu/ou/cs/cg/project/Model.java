@@ -35,7 +35,7 @@ public final class Model
 		this.view = view;
 
 		// Initialize user-adjustable variables (with reasonable default values)
-		Graph graph = new Graph();
+		graph = new Graph();
 	}
 
 	//**********************************************************************
@@ -56,7 +56,13 @@ public final class Model
 	// Public Methods (Modify Variables)
 	//**********************************************************************
 
-	
+    public void addNodes(List<Node> nodes) {
+        graph.addNodes(nodes);
+    }
+
+	public void addEdges(List<Edge> edges) {
+        graph.addEdges(edges);
+    }
 
 	//**********************************************************************
 	// Inner Classes
@@ -94,6 +100,12 @@ public final class Model
 		double h = view.getHeight();
 		return new Point2D.Double((p.getX() / w * 2) - 1, ((h - p.getY()) / h * 2) - 1);
 	}
+
+    public Point2D.Double translateScreenToScene(Point p) {
+        double w = view.getWidth();
+		double h = view.getHeight();
+		return new Point2D.Double((p.getX() / w) * 1280, ((h - p.getY()) / h ) * 720);
+    }
 }
 
 //******************************************************************************

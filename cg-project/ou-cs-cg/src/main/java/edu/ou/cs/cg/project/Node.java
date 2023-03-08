@@ -34,11 +34,19 @@ public class Node {
         return false;
     }
 
-    public void setStart() {
-        start = true;
+    public void toggleStart() {
+        start = !start;
     }
 
-    public void setEnd() {
-        end = true;
+    public void toggleEnd() {
+        end = !end;
+    }
+
+    public boolean isStart() {
+        return start;
+    }
+
+    public boolean isEnd() {
+        return end;
     }
 }

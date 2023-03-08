@@ -52,8 +52,6 @@ public final class View
 	private final FPSAnimator			animator;
 	private int						k;	// Frame counter
 
-    private Graph graph = new Graph();
-
     private boolean init = false;
 
 	private float				defaultLine = 1.0f;		// normal thickness
@@ -170,7 +168,7 @@ public final class View
 		nodes.add(new Node(640, 40));
 		nodes.add(new Node(940, 40));
 
-        graph.addNodes(nodes);
+        model.addNodes(nodes);
 
         ArrayList<Edge> edges = new ArrayList<>();
 		edges.add(new Edge(nodes.get(0), nodes.get(1)));
@@ -188,7 +186,7 @@ public final class View
 		edges.add(new Edge(nodes.get(6), nodes.get(7)));
 		edges.add(new Edge(nodes.get(7), nodes.get(8)));
 
-        graph.addEdges(edges);
+        model.addEdges(edges);
 	}
 
 	private void	render(GLAutoDrawable drawable)
@@ -233,7 +231,7 @@ public final class View
         setColor(gl, 0, 0, 0);
         gl.glLineWidth(edgeLine);				// set the line width to the default
         gl.glBegin(GL.GL_LINES);
-        for (Edge e: graph.getEdges()) {
+        for (Edge e: model.getEdges()) {
             gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
             gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
         }
@@ -242,11 +240,16 @@ public final class View
     }
 
     private void drawNodes(GL2 gl) {
-        setColor(gl, 255, 0, 0);
-        for (Node n: graph.getNodes()) {
+        for (Node n: model.getNodes()) {
+            if (n.isStart()) {
+                setColor(gl, 0, 0, 255);
+            }
+            else {
+                setColor(gl, 255, 0, 0);
+            }
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x, p.y, 25);
-            edgeCircle(gl, p.x, p.y, 25);
+            fillCircle(gl, p.x, p.y, radius);
+            edgeCircle(gl, p.x, p.y, radius);
         }
     }
 
