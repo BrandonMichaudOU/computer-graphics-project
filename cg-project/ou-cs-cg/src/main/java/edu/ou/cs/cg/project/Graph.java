@@ -67,7 +67,6 @@ public class Graph {
         q.add(nodes.get(start));
         seen.add(nodes.get(start));
         while (!q.isEmpty()) {
-            System.out.println("Q not empty");
             Node n = q.poll();
             for (Edge e: edges){
                 if (n.equals(e.getNode1())) {

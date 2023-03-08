@@ -95,6 +95,14 @@ public final class Model
 		});
     }
 
+    public void clearBFS() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				bfs = null;
+			}
+		});
+    }
+
 	//**********************************************************************
 	// Inner Classes
 	//**********************************************************************

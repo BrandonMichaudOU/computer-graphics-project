@@ -71,6 +71,8 @@ public final class View
 	private float				defaultline = 1.0f;		// normal thickness
 	private float				thickline = 2.5f;		// bold thickness
 
+    private int                 bfsCounter = 120;
+
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -257,15 +259,26 @@ public final class View
     private void drawBFS(GL2 gl) {
         List<Edge> path = model.getBFS();
         if (path != null) {
+            int numEdgesToDraw = bfsCounter / 120;
+            if (numEdgesToDraw > path.size()) {
+                model.clearBFS();
+                bfsCounter = 120;
+                return;
+            }
             setColor(gl, 0, 255, 255);
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
-            for (Edge e: path) {
-                gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
-                gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
+            for (int i = 0; i < numEdgesToDraw; ++i) {
+                gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
+                gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
             }
+            // for (Edge e: path) {
+            //     gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
+            //     gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
+            // }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
+            ++bfsCounter;
         }
     }
 
