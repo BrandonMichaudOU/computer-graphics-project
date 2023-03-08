@@ -24,7 +24,7 @@ public final class Model
 	private final View					view;
 
 	// Model variables
-	
+	Graph graph;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -35,14 +35,22 @@ public final class Model
 		this.view = view;
 
 		// Initialize user-adjustable variables (with reasonable default values)
-		
+		Graph graph = new Graph();
 	}
 
 	//**********************************************************************
 	// Public Methods (Access Variables)
 	//**********************************************************************
 
-	
+	public List<Node>	getNodes()
+	{
+		return graph.getNodes();
+	}
+
+    public List<Edge>	getEdges()
+	{
+		return graph.getEdges();
+	}
 
 	//**********************************************************************
 	// Public Methods (Modify Variables)

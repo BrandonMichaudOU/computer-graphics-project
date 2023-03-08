@@ -1,10 +1,14 @@
 package edu.ou.cs.cg.project;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Graph {
-    public ArrayList<Node> nodes;
-    public ArrayList<Edge> edges;
+    private ArrayList<Node> nodes;
+    private ArrayList<Edge> edges;
+    private boolean start = false;
+    private boolean end = false;
 
     public Graph(ArrayList<Node> nodes, ArrayList<Edge> edges) {
         this.nodes = nodes;
@@ -16,11 +20,35 @@ public class Graph {
         this.edges = new ArrayList<>();
     }
 
-    public void addNode(double x, double y, double r){
-        this.nodes.add(new Node(x, y, r));
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(nodes);
     }
 
-    public void addEdge(int node1, int node2){
-        this.edges.add(new Edge(nodes.get(node1), nodes.get(node2)));
+    public List<Edge> getEdges() {
+        return Collections.unmodifiableList(edges);
+    }
+
+    public void addNode(Node n){
+        nodes.add(n);
+    }
+
+    public void addNodes(List<Node> nodes) {
+        for (Node n: nodes) {
+            addNode(n);
+        }
+    }
+
+    public void addEdge(Edge e){
+        edges.add(e);
+    }
+
+    public void addEdges(List<Edge> edges) {
+        for (Edge e: edges) {
+            addEdge(e);
+        }
+    }
+
+    public void setStart(Node n) {
+
     }
 }

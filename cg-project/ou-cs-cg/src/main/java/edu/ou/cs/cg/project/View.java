@@ -159,31 +159,36 @@ public final class View
 	}
 
     private void buildGraphOne() {
-		//adding default nodes
-		graph.addNode(340, 680, radius);
-		graph.addNode(640, 680, radius);
-		graph.addNode(940, 680, radius);
-		graph.addNode(40, 360, radius);
-		graph.addNode(490, 360, radius);
-		graph.addNode(1240, 360, radius);
-		graph.addNode(340, 40, radius);
-		graph.addNode(640,40, radius);
-		graph.addNode(940,40, radius);
-		//adding default edges
-		graph.addEdge(0, 1);
-		graph.addEdge(0, 3);
-		graph.addEdge(0, 6);
-		graph.addEdge(1, 2);
-		graph.addEdge(1,4);
-		graph.addEdge(1, 8);
-		graph.addEdge(2, 5);
-		graph.addEdge(2, 8);
-		graph.addEdge(3,6);
-		graph.addEdge(4, 6);
-		graph.addEdge(4, 7);
-		graph.addEdge(5, 8);
-		graph.addEdge(6, 7);
-		graph.addEdge(7, 8);
+        ArrayList<Node> nodes = new ArrayList<>();
+		nodes.add(new Node(340, 680));
+		nodes.add(new Node(640, 680));
+		nodes.add(new Node(940, 680));
+		nodes.add(new Node(40, 360));
+		nodes.add(new Node(490, 360));
+		nodes.add(new Node(1240, 360));
+		nodes.add(new Node(340, 40));
+		nodes.add(new Node(640, 40));
+		nodes.add(new Node(940, 40));
+
+        graph.addNodes(nodes);
+
+        ArrayList<Edge> edges = new ArrayList<>();
+		edges.add(new Edge(nodes.get(0), nodes.get(1)));
+		edges.add(new Edge(nodes.get(0), nodes.get(3)));
+		edges.add(new Edge(nodes.get(0), nodes.get(6)));
+		edges.add(new Edge(nodes.get(1), nodes.get(2)));
+		edges.add(new Edge(nodes.get(1), nodes.get(4)));
+		edges.add(new Edge(nodes.get(1), nodes.get(8)));
+		edges.add(new Edge(nodes.get(2), nodes.get(5)));
+		edges.add(new Edge(nodes.get(2), nodes.get(8)));
+		edges.add(new Edge(nodes.get(3), nodes.get(6)));
+		edges.add(new Edge(nodes.get(4), nodes.get(6)));
+		edges.add(new Edge(nodes.get(4), nodes.get(7)));
+		edges.add(new Edge(nodes.get(5), nodes.get(8)));
+		edges.add(new Edge(nodes.get(6), nodes.get(7)));
+		edges.add(new Edge(nodes.get(7), nodes.get(8)));
+
+        graph.addEdges(edges);
 	}
 
 	private void	render(GLAutoDrawable drawable)
@@ -228,9 +233,9 @@ public final class View
         setColor(gl, 0, 0, 0);
         gl.glLineWidth(edgeLine);				// set the line width to the default
         gl.glBegin(GL.GL_LINES);
-        for (Edge e: graph.edges) {
-            gl.glVertex2d(e.node1.x, e.node1.y);
-            gl.glVertex2d(e.node2.x, e.node2.y);
+        for (Edge e: graph.getEdges()) {
+            gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
+            gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
         }
         gl.glEnd();
         gl.glLineWidth(defaultLine);
@@ -238,9 +243,10 @@ public final class View
 
     private void drawNodes(GL2 gl) {
         setColor(gl, 255, 0, 0);
-        for (Node n: graph.nodes) {
-            fillCircle(gl, n.x, n.y, 25);
-            edgeCircle(gl, n.x, n.y, 25);
+        for (Node n: graph.getNodes()) {
+            Point2D.Double p = n.getPoint();
+            fillCircle(gl, p.x, p.y, 25);
+            edgeCircle(gl, p.x, p.y, 25);
         }
     }
 

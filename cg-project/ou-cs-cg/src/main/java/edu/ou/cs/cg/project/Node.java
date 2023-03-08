@@ -1,24 +1,29 @@
 package edu.ou.cs.cg.project;
 
-public class Node {
-    public double x;
-    public double y;
-    public double r;
-    public boolean start;
-    public boolean end;
+import java.awt.geom.Point2D;
 
-    public Node(double x, double y, double r) {
+public class Node {
+    private double x;
+    private double y;
+    private double r = 25;
+    private boolean start = false;
+    private boolean end = false;
+
+    public Node(double x, double y) {
         this.x = x;
         this.y = y;
-        this.start = false;
-        this.end = false;
     }
 
-    public Node(double x, double y, double r, boolean start, boolean end) {
-        this.x = x;
-        this.y = y;
-        this.start = start;
-        this.end = end;
+    public Point2D.Double getPoint() {
+        return new Point2D.Double(x, y);
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public boolean isInNode(double x, double y) {
@@ -27,5 +32,13 @@ public class Node {
             return true;
         }
         return false;
+    }
+
+    public void setStart() {
+        start = true;
+    }
+
+    public void setEnd() {
+        end = true;
     }
 }
