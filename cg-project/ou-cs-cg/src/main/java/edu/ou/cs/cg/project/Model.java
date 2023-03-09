@@ -75,6 +75,7 @@ public final class Model
 			public void	update(GL2 gl) {
 				graph.clearGraph();
 				path = null;
+				edgeStart = null;
 			}
 		});
 	}
