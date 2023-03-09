@@ -47,6 +47,9 @@ public final class KeyHandler extends KeyAdapter
 			case KeyEvent.VK_B:
 				model.BFS();
 				break;
+			case KeyEvent.VK_D:
+				model.DFS();
+				break;
 			case KeyEvent.VK_Q:
 				model.clearPath();
 				view.pathCounter = 120;

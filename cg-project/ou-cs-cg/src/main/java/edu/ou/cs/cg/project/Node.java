@@ -42,7 +42,7 @@ public class Node {
     }
 
     public boolean equals(Node n) {
-        double alpha = 5;
+        double alpha = 0.05;
         if (Math.abs(n.x - this.x) <= alpha && Math.abs(n.y - this.y) <= alpha) {
             return true;
         }

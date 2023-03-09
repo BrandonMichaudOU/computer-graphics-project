@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 
 public class Graph {
     private ArrayList<Node> nodes;
@@ -115,7 +116,48 @@ public class Graph {
         return Collections.unmodifiableList(path);
     }
 
-    public static boolean containsNode(ArrayList<Node> arr, Node n) {
+    public List<Edge> DFS() {
+        if (start == -1 || nodes.size() == 0) {
+            return null;
+        }
+        ArrayList<Edge> path = new ArrayList<>();
+        ArrayList<Node> seen = new ArrayList<>();
+        seen.add(nodes.get(start));
+        recursiveDFS(nodes.get(start), seen, path);
+        
+        return Collections.unmodifiableList(path);
+    }
+
+    public void recursiveDFS(Node n, List<Node> seen, List<Edge> path) {
+        List<Edge> unseenConnected = getUnseenConnected(n, seen);
+        for (Edge e: unseenConnected) {
+            if (n.equals(e.getNode1()) && !containsNode(seen, e.getNode2())) {
+                path.add(e);
+                seen.add(e.getNode2());
+                recursiveDFS(e.getNode2(), seen, path);
+            }
+            else if (!containsNode(seen, e.getNode1())) {
+                path.add(e);
+                seen.add(e.getNode1());
+                recursiveDFS(e.getNode1(), seen, path);
+            }
+        }
+    }
+
+    public List<Edge> getUnseenConnected(Node n, List<Node> seen) {
+        ArrayList<Edge> connected = new ArrayList<>();
+        for (Edge e: edges) {
+            if (e.getNode1().equals(n) && !containsNode(seen, e.getNode2())) {
+                connected.add(e);
+            }
+            else if (e.getNode2().equals(n) && !containsNode(seen, e.getNode1())) {
+                connected.add(e);
+            }
+        }
+        return connected;
+    }
+
+    public static boolean containsNode(List<Node> arr, Node n) {
         for (Node nod: arr) {
             if (n.equals(nod)) {
                 return true;

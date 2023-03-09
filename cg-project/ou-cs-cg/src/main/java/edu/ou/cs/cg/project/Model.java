@@ -152,6 +152,14 @@ public final class Model
 		});
     }
 
+	public void DFS() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				path = graph.DFS();
+			}
+		});
+    }
+
     public void clearPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
