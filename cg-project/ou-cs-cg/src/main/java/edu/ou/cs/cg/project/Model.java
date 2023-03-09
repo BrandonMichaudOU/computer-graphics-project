@@ -83,7 +83,9 @@ public final class Model
 	public void addNode(Node n) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				graph.addNode(n);
+				if (path == null) {
+					graph.addNode(n);
+				}
 			}
 		});
 	}
@@ -91,7 +93,9 @@ public final class Model
 	public void addEdge(Edge e) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				graph.addEdge(e);
+				if (path == null) {
+					graph.addEdge(e);
+				}
 			}
 		});
 	}
@@ -99,7 +103,9 @@ public final class Model
     public void addNodes(List<Node> nodes) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				graph.addNodes(nodes);
+				if (path == null) {
+					graph.addNodes(nodes);
+				}
 			}
 		});
     }
@@ -107,7 +113,9 @@ public final class Model
 	public void addEdges(List<Edge> edges) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				graph.addEdges(edges);
+				if (path == null) {
+					graph.addEdges(edges);
+				}
 			}
 		});
     }
@@ -115,11 +123,11 @@ public final class Model
 	public void addPossibleEdge(Node n) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (edgeStart != null && !edgeStart.equals(n)) {
+				if (edgeStart != null && !edgeStart.equals(n) && path == null) {
 					graph.addEdge(new Edge(edgeStart, n));
 					edgeStart = null;
 				}
-				else {
+				else if (path == null) {
 					edgeStart = n;
 				}
 			}
