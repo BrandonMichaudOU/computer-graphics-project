@@ -25,7 +25,7 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
-    private List<Edge> bfs;
+    private List<Edge> path;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -37,7 +37,7 @@ public final class Model
 
 		// Initialize user-adjustable variables (with reasonable default values)
 		graph = new Graph();
-        bfs = null;
+        path = null;
 	}
 
 	//**********************************************************************
@@ -54,9 +54,14 @@ public final class Model
 		return graph.getEdges();
 	}
 
-    public List<Edge>   getBFS()
+    public List<Edge>   getPath()
     {
-        return bfs;
+        return path;
+    }
+
+    public Node         getStart() 
+    {
+        return graph.getStart();
     }
 
 	//**********************************************************************
@@ -82,6 +87,9 @@ public final class Model
     public void setStart(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
+                if (path != null) {
+                    return;
+                }
 				graph.setStart(idx);
 			}
 		});
@@ -90,15 +98,15 @@ public final class Model
     public void BFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				bfs = graph.BFS();
+				path = graph.BFS();
 			}
 		});
     }
 
-    public void clearBFS() {
+    public void clearPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				bfs = null;
+				path = null;
 			}
 		});
     }

@@ -71,7 +71,7 @@ public final class View
 	private float				defaultline = 1.0f;		// normal thickness
 	private float				thickline = 2.5f;		// bold thickness
 
-    private int                 bfsCounter = 120;
+    public int                 pathCounter = 120;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -201,8 +201,11 @@ public final class View
 		setProjection(gl);							// Use screen coordinates
         
         drawEdges(gl);
-        drawBFS(gl);
+        List<Node> reached = drawPath(gl);
         drawNodes(gl);
+        if (reached != null) {
+            drawReached(gl, reached);
+        }
 	}
 
 	//**********************************************************************
@@ -256,29 +259,63 @@ public final class View
         }
     }
 
-    private void drawBFS(GL2 gl) {
-        List<Edge> path = model.getBFS();
+    private List<Node> drawPath(GL2 gl) {
+        List<Edge> path = model.getPath();
         if (path != null) {
-            int numEdgesToDraw = bfsCounter / 120;
-            if (numEdgesToDraw > path.size()) {
-                model.clearBFS();
-                bfsCounter = 120;
-                return;
-            }
+            int numEdgesToDraw = pathCounter / 121;
+            double proportionOfFinalEdge = (pathCounter % 121) / 120.0;
             setColor(gl, 0, 255, 255);
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
+            ArrayList<Node> previous = new ArrayList<>();
+            previous.add(model.getStart());
             for (int i = 0; i < numEdgesToDraw; ++i) {
-                gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
-                gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
+                if (i >= path.size()) {
+                    break;
+                }
+                else if (i == numEdgesToDraw - 1) {
+                    if (Graph.containsNode(previous, path.get(i).getNode1())) {
+                        gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
+                        double xVector = path.get(i).getNode2().getX() - path.get(i).getNode1().getX();
+                        double yVector = path.get(i).getNode2().getY() - path.get(i).getNode1().getY();
+                        gl.glVertex2d(path.get(i).getNode1().getX() + xVector * proportionOfFinalEdge, 
+                            path.get(i).getNode1().getY() + yVector * proportionOfFinalEdge);
+                    }
+                    else {
+                        gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
+                        double xVector = path.get(i).getNode1().getX() - path.get(i).getNode2().getX();
+                        double yVector = path.get(i).getNode1().getY() - path.get(i).getNode2().getY();
+                        gl.glVertex2d(path.get(i).getNode2().getX() + xVector * proportionOfFinalEdge, 
+                            path.get(i).getNode2().getY() + yVector * proportionOfFinalEdge);
+                    }
+                }
+                else {
+                    gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
+                    gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
+                }
+                if (Graph.containsNode(previous, path.get(i).getNode1())) {
+                    previous.add(path.get(i).getNode2());
+                }
+                else {
+                    previous.add(path.get(i).getNode1());
+                }
             }
-            // for (Edge e: path) {
-            //     gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
-            //     gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
-            // }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
-            ++bfsCounter;
+            ++pathCounter;
+            if (!(numEdgesToDraw > path.size())) {
+                previous.remove(previous.size() - 1);
+            }
+            return previous;
+        }
+        return null;
+    }
+
+    private void drawReached(GL2 gl, List<Node> reached) {
+        for (Node n: reached) {
+            setColor(gl, 0, 255, 0);
+            fillCircle(gl, n.getX(), n.getY(), radius);
+            edgeCircle(gl, n.getX(), n.getY(), radius);
         }
     }
 

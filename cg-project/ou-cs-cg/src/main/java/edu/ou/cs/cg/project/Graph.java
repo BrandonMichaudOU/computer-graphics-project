@@ -25,6 +25,11 @@ public class Graph {
         return Collections.unmodifiableList(edges);
     }
 
+    public Node getStart() {
+        Node startNode = nodes.get(start);
+        return new Node(startNode.getX(), startNode.getY());
+    }
+
     public void addNode(Node n){
         nodes.add(n);
     }
@@ -90,7 +95,7 @@ public class Graph {
         return Collections.unmodifiableList(path);
     }
 
-    private boolean containsNode(ArrayList<Node> arr, Node n) {
+    public static boolean containsNode(ArrayList<Node> arr, Node n) {
         for (Node nod: arr) {
             if (n.equals(nod)) {
                 return true;

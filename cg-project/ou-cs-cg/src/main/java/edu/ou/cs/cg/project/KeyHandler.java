@@ -46,8 +46,12 @@ public final class KeyHandler extends KeyAdapter
 	{
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_ENTER:
+			case KeyEvent.VK_B:
 				model.BFS();
+				break;
+			case KeyEvent.VK_Q:
+				model.clearPath();
+				view.pathCounter = 120;
 				break;
 		}
 	}
