@@ -30,6 +30,13 @@ public class Graph {
         return new Node(startNode.getX(), startNode.getY());
     }
 
+    public void clearGraph() {
+        edges.clear();
+        nodes.clear();
+        start = -1;
+        end = -1;
+    }
+
     public void addNode(Node n){
         nodes.add(n);
     }
@@ -49,6 +56,19 @@ public class Graph {
             addEdge(e);
         }
     }
+
+    // public void removeNode(int i) {
+    //     if (start == i) {
+    //         start = -1;
+    //     }
+    //     Node n = nodes.get(i);
+    //     nodes.remove(i);
+    //     for (Edge e: edges) {
+    //         if (e.getNode1().equals(n) || e.getNode2().equals(n)) {
+    //             edges.remove(e);
+    //         }
+    //     }
+    // }
 
     public void setStart(int idx) {
         if (start == idx) {

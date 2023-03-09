@@ -57,7 +57,7 @@ public final class View
 	private float				defaultLine = 1.0f;		// normal thickness
 	private float				edgeLine = 2.5f;		// edge thickness
 
-	private double 				radius = 25;
+	public double 				radius = 25;
 
 	private final Model				model;
 

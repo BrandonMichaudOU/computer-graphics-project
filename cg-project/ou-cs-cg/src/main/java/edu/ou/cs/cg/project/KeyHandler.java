@@ -3,8 +3,6 @@ package edu.ou.cs.cg.project;
 //import java.lang.*;
 import java.awt.Component;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
-import edu.ou.cs.cg.utilities.Utilities;
 
 //******************************************************************************
 
@@ -52,6 +50,9 @@ public final class KeyHandler extends KeyAdapter
 			case KeyEvent.VK_Q:
 				model.clearPath();
 				view.pathCounter = 120;
+				break;
+			case KeyEvent.VK_C:
+				model.clearGraph();
 				break;
 		}
 	}

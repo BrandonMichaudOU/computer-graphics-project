@@ -1,12 +1,10 @@
 package edu.ou.cs.cg.project;
 
 import java.awt.geom.Point2D;
-import java.util.Comparator;
 
 public class Node {
     private double x;
     private double y;
-    private double r = 25;
     private boolean start = false;
     private boolean end = false;
 
@@ -27,14 +25,6 @@ public class Node {
         return y;
     }
 
-    public boolean isInNode(double x, double y) {
-        double dist = Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
-        if (dist <= r) {
-            return true;
-        }
-        return false;
-    }
-
     public void toggleStart() {
         start = !start;
     }
@@ -52,7 +42,7 @@ public class Node {
     }
 
     public boolean equals(Node n) {
-        double alpha = 0.05;
+        double alpha = 5;
         if (Math.abs(n.x - this.x) <= alpha && Math.abs(n.y - this.y) <= alpha) {
             return true;
         }

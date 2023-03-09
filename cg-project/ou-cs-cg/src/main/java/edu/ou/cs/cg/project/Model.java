@@ -26,6 +26,7 @@ public final class Model
 	// Model variables
 	private Graph graph;
     private List<Edge> path;
+	private Node edgeStart;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -38,6 +39,7 @@ public final class Model
 		// Initialize user-adjustable variables (with reasonable default values)
 		graph = new Graph();
         path = null;
+		edgeStart = null;
 	}
 
 	//**********************************************************************
@@ -68,6 +70,31 @@ public final class Model
 	// Public Methods (Modify Variables)
 	//**********************************************************************
 
+	public void clearGraph() {
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.clearGraph();
+				path = null;
+			}
+		});
+	}
+
+	public void addNode(Node n) {
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.addNode(n);
+			}
+		});
+	}
+
+	public void addEdge(Edge e) {
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				graph.addEdge(e);
+			}
+		});
+	}
+
     public void addNodes(List<Node> nodes) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -83,6 +110,28 @@ public final class Model
 			}
 		});
     }
+
+	public void addPossibleEdge(Node n) {
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				if (edgeStart != null && !edgeStart.equals(n)) {
+					graph.addEdge(new Edge(edgeStart, n));
+					edgeStart = null;
+				}
+				else {
+					edgeStart = n;
+				}
+			}
+		});
+	}
+
+	// public void removeNode(int i) {
+	// 	view.getCanvas().invoke(false, new BasicUpdater() {
+	// 		public void	update(GL2 gl) {
+	// 			graph.removeNode(i);;
+	// 		}
+	// 	});
+	// }
 
     public void setStart(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
