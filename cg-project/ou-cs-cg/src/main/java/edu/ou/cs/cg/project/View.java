@@ -250,6 +250,9 @@ public final class View
             if (n.isStart()) {
                 setColor(gl, 0, 0, 255);
             }
+			else if (n.isEnd()) {
+				setColor(gl, 255, 0, 255);
+			}
             else {
                 setColor(gl, 255, 0, 0);
             }

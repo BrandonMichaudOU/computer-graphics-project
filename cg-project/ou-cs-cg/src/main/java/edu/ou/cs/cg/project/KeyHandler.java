@@ -54,9 +54,9 @@ public final class KeyHandler extends KeyAdapter
 				model.clearPath();
 				view.pathCounter = 120;
 				break;
-			case KeyEvent.VK_C:
-				model.clearGraph();
-				break;
+			// case KeyEvent.VK_C:
+			// 	model.clearGraph();
+			// 	break;
 		}
 	}
 }

@@ -66,6 +66,11 @@ public final class Model
         return graph.getStart();
     }
 
+	public Node         getEnd() 
+    {
+        return graph.getEnd();
+    }
+
 	//**********************************************************************
 	// Public Methods (Modify Variables)
 	//**********************************************************************
@@ -120,19 +125,19 @@ public final class Model
 		});
     }
 
-	public void addPossibleEdge(Node n) {
-		view.getCanvas().invoke(false, new BasicUpdater() {
-			public void	update(GL2 gl) {
-				if (edgeStart != null && !edgeStart.equals(n) && path == null) {
-					graph.addEdge(new Edge(edgeStart, n));
-					edgeStart = null;
-				}
-				else if (path == null) {
-					edgeStart = n;
-				}
-			}
-		});
-	}
+	// public void addPossibleEdge(Node n) {
+	// 	view.getCanvas().invoke(false, new BasicUpdater() {
+	// 		public void	update(GL2 gl) {
+	// 			if (edgeStart != null && !edgeStart.equals(n) && path == null) {
+	// 				graph.addEdge(new Edge(edgeStart, n));
+	// 				edgeStart = null;
+	// 			}
+	// 			else if (path == null) {
+	// 				edgeStart = n;
+	// 			}
+	// 		}
+	// 	});
+	// }
 
 	// public void removeNode(int i) {
 	// 	view.getCanvas().invoke(false, new BasicUpdater() {
@@ -149,6 +154,17 @@ public final class Model
                     return;
                 }
 				graph.setStart(idx);
+			}
+		});
+    }
+
+	public void setEnd(int idx) {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+                if (path != null) {
+                    return;
+                }
+				graph.setEnd(idx);
 			}
 		});
     }

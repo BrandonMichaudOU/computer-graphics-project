@@ -47,12 +47,13 @@ public final class MouseHandler extends MouseAdapter
 	{
         Point2D.Double click = model.translateScreenToScene(e.getPoint());
         int i = 0;
-		boolean safe = true;
+		// boolean safe = true;
 		for (Node n: model.getNodes()) {
 			double dist = distance(n.getPoint(), click);
             if (dist <= view.radius) {
 				if (e.isShiftDown()) {
-					model.addPossibleEdge(n);
+					//model.addPossibleEdge(n);
+					model.setEnd(i);
 				}
 				// else if (e.isControlDown()) {
 				// 	model.removeNode(i);
@@ -62,14 +63,14 @@ public final class MouseHandler extends MouseAdapter
 				}
 				return;
             }
-			else if (dist <= 2 * view.radius) {
-				safe = false;
-			}
+			// else if (dist <= 2 * view.radius) {
+			// 	safe = false;
+			// }
             ++i;
         }
-		if (safe) {
-			model.addNode(new Node(click.x, click.y));
-		}
+		// if (safe) {
+		// 	model.addNode(new Node(click.x, click.y));
+		// }
 	}
 
 	public void		mousePressed(MouseEvent e)

@@ -31,6 +31,11 @@ public class Graph {
         return new Node(startNode.getX(), startNode.getY());
     }
 
+    public Node getEnd() {
+        Node endNode = nodes.get(end);
+        return new Node(endNode.getX(), endNode.getY());
+    }
+
     public void clearGraph() {
         edges.clear();
         nodes.clear();
@@ -72,7 +77,13 @@ public class Graph {
     // }
 
     public void setStart(int idx) {
+        if (end == idx) {
+            nodes.get(end).toggleEnd();
+            end = -1;
+        }
         if (start == idx) {
+            nodes.get(start).toggleStart();
+            start = -1;
             return;
         }
         if (start != -1) {
@@ -80,6 +91,23 @@ public class Graph {
         }
         nodes.get(idx).toggleStart();
         start = idx;
+    }
+
+    public void setEnd(int idx) {
+        if (start == idx) {
+            nodes.get(start).toggleStart();
+            start = -1;
+        }
+        if (end == idx) {
+            nodes.get(end).toggleEnd();
+            end = -1;
+            return;
+        }
+        if (end != -1) {
+            nodes.get(end).toggleEnd();
+        }
+        nodes.get(idx).toggleEnd();
+        end = idx;
     }
 
     public List<Edge> BFS() {
