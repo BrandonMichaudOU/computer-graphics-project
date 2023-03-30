@@ -268,8 +268,8 @@ public final class View
                 setColor(gl, 255, 0, 0);
             }
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius);
-            edgeCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius);
+            fillCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius * zoom);
+            edgeCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius * zoom);
         }
     }
 
