@@ -2,10 +2,14 @@ package edu.ou.cs.cg.project;
 
 //import java.lang.*;
 import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GridLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.*;
+import java.awt.Component;
 
 //******************************************************************************
 
@@ -66,6 +70,7 @@ public final class Application
 		//GLCanvas		canvas = new GLCanvas(capabilities);	// Single-buffer
 		GLJPanel		canvas = new GLJPanel(capabilities);	// Double-buffer
 		JFrame			frame = new JFrame(DEFAULT_NAME);
+		frame.setVisible(true);
 
 		// Rectify display scaling issues when in Hi-DPI mode on macOS.
 		edu.ou.cs.cg.utilities.Utilities.setIdentityPixelScale(canvas);
@@ -74,11 +79,27 @@ public final class Application
 		canvas.setPreferredSize(DEFAULT_SIZE);
 
 		// Populate and show the frame
-		frame.setBounds(50, 50, 200, 200);
-		frame.getContentPane().add(canvas);
+		frame.setBounds(50, 50, 1000, 1000);
+		//frame.getContentPane().add(canvas);
+		JPanel 			panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(canvas);
+		frame.getContentPane().add(panel);
+
+		JLabel label = new JLabel("Select the Graph Algorithm to run.");
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel.add(label);
+
+		String[] choices = {"Breadth-First-Search", "Depth-First-Search", "Shortest-Path"};
+		final JComboBox<String> cb = new JComboBox<String>(choices);
+		cb.setMaximumSize(cb.getPreferredSize());
+		cb.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel.add(cb);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+
 
 		// Exit when the user clicks the frame's close button
 		frame.addWindowListener(new WindowAdapter() {
