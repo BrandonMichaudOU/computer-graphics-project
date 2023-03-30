@@ -246,7 +246,7 @@ public final class View
 	//**********************************************************************
     private void drawEdges(GL2 gl) {
         setColor(gl, 0, 0, 0);
-        gl.glLineWidth(edgeLine);				// set the line width to the default
+        gl.glLineWidth(edgeLine / (float) zoom);				// set the line width to the default
         gl.glBegin(GL.GL_LINES);
         for (Edge e: model.getEdges()) {
             gl.glVertex2d(e.getNode1().getX() * 1 + pan.x, e.getNode1().getY() * 1 + pan.y);
