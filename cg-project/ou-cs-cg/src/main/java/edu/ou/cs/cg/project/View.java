@@ -238,10 +238,10 @@ public final class View
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);		// Prepare for matrix xform
 		gl.glLoadIdentity();						// Set to identity matrix
-		glu.gluOrtho2D(0.0f, 1280.0f, 0.0f, 720.0f);// 2D translate and scale
+		glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
 	}
 
-    //**********************************************************************
+    //************************************ ***********************************
 	// Private Methods (Graph Functions)
 	//**********************************************************************
     private void drawEdges(GL2 gl) {
@@ -249,8 +249,8 @@ public final class View
         gl.glLineWidth(edgeLine);				// set the line width to the default
         gl.glBegin(GL.GL_LINES);
         for (Edge e: model.getEdges()) {
-            gl.glVertex2d(e.getNode1().getX() * zoom + pan.x, e.getNode1().getY() * zoom + pan.y);
-            gl.glVertex2d(e.getNode2().getX() * zoom + pan.x, e.getNode2().getY() * zoom + pan.y);
+            gl.glVertex2d(e.getNode1().getX() * 1 + pan.x, e.getNode1().getY() * 1 + pan.y);
+            gl.glVertex2d(e.getNode2().getX() * 1 + pan.x, e.getNode2().getY() * 1 + pan.y);
         }
         gl.glEnd();
         gl.glLineWidth(defaultLine);
@@ -268,8 +268,8 @@ public final class View
                 setColor(gl, 255, 0, 0);
             }
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius * zoom);
-            edgeCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius * zoom);
+            fillCircle(gl, p.x * 1 + pan.x, p.y * 1 + pan.y, radius);
+            edgeCircle(gl, p.x * 1 + pan.x, p.y * 1 + pan.y, radius);
         }
     }
 
