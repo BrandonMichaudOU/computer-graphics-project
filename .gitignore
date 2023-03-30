@@ -1,2 +1,6 @@
 cg-project/ou-cs-cg/build/*
 cg-project/ou-cs-cg/build
+cg-project/ou-cs-cg/.gradle
+cg-project/ou-cs-cg/.gradle/*
+cg-project/ou-cs-cg/bin/*
+cg-project/ou-cs-cg/bin
