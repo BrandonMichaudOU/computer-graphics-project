@@ -73,6 +73,11 @@ public final class View
 
     public int                 pathCounter = 120;
 
+	private Point2D.Double 		pan;
+	private double					zoom;
+
+
+
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -95,6 +100,9 @@ public final class View
 		// Initialize animation
 		animator = new FPSAnimator(canvas, DEFAULT_FRAMES_PER_SECOND);
 		animator.start();
+
+		pan = model.getPan();
+		zoom = model.getZoom();
 	}
 
 	//**********************************************************************
@@ -156,6 +164,9 @@ public final class View
             init = true;
             buildGraphOne();
         }
+
+		pan = model.getPan();
+		zoom = model.getZoom();
 	}
 
     private void buildGraphOne() {
@@ -238,8 +249,8 @@ public final class View
         gl.glLineWidth(edgeLine);				// set the line width to the default
         gl.glBegin(GL.GL_LINES);
         for (Edge e: model.getEdges()) {
-            gl.glVertex2d(e.getNode1().getX(), e.getNode1().getY());
-            gl.glVertex2d(e.getNode2().getX(), e.getNode2().getY());
+            gl.glVertex2d(e.getNode1().getX() * zoom + pan.x, e.getNode1().getY() * zoom + pan.y);
+            gl.glVertex2d(e.getNode2().getX() * zoom + pan.x, e.getNode2().getY() * zoom + pan.y);
         }
         gl.glEnd();
         gl.glLineWidth(defaultLine);
@@ -257,8 +268,8 @@ public final class View
                 setColor(gl, 255, 0, 0);
             }
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x, p.y, radius);
-            edgeCircle(gl, p.x, p.y, radius);
+            fillCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius);
+            edgeCircle(gl, p.x * zoom + pan.x, p.y * zoom + pan.y, radius);
         }
     }
 

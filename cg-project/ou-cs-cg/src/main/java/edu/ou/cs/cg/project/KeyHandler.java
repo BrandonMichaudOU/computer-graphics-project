@@ -3,6 +3,9 @@ package edu.ou.cs.cg.project;
 //import java.lang.*;
 import java.awt.Component;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
+
+import edu.ou.cs.cg.utilities.Utilities;
 
 //******************************************************************************
 
@@ -42,6 +45,8 @@ public final class KeyHandler extends KeyAdapter
 
 	public void		keyPressed(KeyEvent e)
 	{
+		Point2D.Double currPan = model.getPan();
+		double			a = (Utilities.isShiftDown(e) ? 10 : 100);
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_B:
@@ -53,6 +58,18 @@ public final class KeyHandler extends KeyAdapter
 			case KeyEvent.VK_Q:
 				model.clearPath();
 				view.pathCounter = 120;
+				break;
+			case KeyEvent.VK_LEFT:
+				model.setPan(currPan.x - a, currPan.y);
+				break;
+			case KeyEvent.VK_RIGHT:
+				model.setPan(currPan.x + a, currPan.y);
+				break;
+			case KeyEvent.VK_DOWN:
+				model.setPan(currPan.x, currPan.y - a);
+				break;
+			case KeyEvent.VK_UP:
+				model.setPan(currPan.x, currPan.y + a);
 				break;
 			// case KeyEvent.VK_C:
 			// 	model.clearGraph();
