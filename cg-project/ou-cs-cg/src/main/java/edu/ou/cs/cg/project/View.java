@@ -212,7 +212,7 @@ public final class View
 		setProjection(gl);							// Use screen coordinates
         
         drawEdges(gl);
-        List<Node> reached = drawPath(gl);
+		List<Node> reached = drawPath(gl);
         drawNodes(gl);
         if (reached != null) {
             drawReached(gl, reached);
@@ -273,57 +273,39 @@ public final class View
         }
     }
 
-    private List<Node> drawPath(GL2 gl) {
-        List<Edge> path = model.getPath();
+	private List<Node> drawPath(GL2 gl) {
+		List<SearchNode> path = model.getPath();
+		ArrayList<Node> reached = new ArrayList<>();
         if (path != null) {
-            int numEdgesToDraw = pathCounter / 121;
+            int numNodesToDraw = (pathCounter / 121) + 1;
             double proportionOfFinalEdge = (pathCounter % 121) / 120.0;
-            setColor(gl, 0, 255, 255);
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
-            ArrayList<Node> previous = new ArrayList<>();
-            previous.add(model.getStart());
-            for (int i = 0; i < numEdgesToDraw; ++i) {
-                if (i >= path.size()) {
+            for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
+				setColor(gl, 0, 255, 255);
+                if (j >= path.size()) {
                     break;
                 }
-                else if (i == numEdgesToDraw - 1) {
-                    if (Graph.containsNode(previous, path.get(i).getNode1())) {
-                        gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
-                        double xVector = path.get(i).getNode2().getX() - path.get(i).getNode1().getX();
-                        double yVector = path.get(i).getNode2().getY() - path.get(i).getNode1().getY();
-                        gl.glVertex2d(path.get(i).getNode1().getX() + xVector * proportionOfFinalEdge, 
-                            path.get(i).getNode1().getY() + yVector * proportionOfFinalEdge);
-                    }
-                    else {
-                        gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
-                        double xVector = path.get(i).getNode1().getX() - path.get(i).getNode2().getX();
-                        double yVector = path.get(i).getNode1().getY() - path.get(i).getNode2().getY();
-                        gl.glVertex2d(path.get(i).getNode2().getX() + xVector * proportionOfFinalEdge, 
-                            path.get(i).getNode2().getY() + yVector * proportionOfFinalEdge);
-                    }
+                else if (i == numNodesToDraw - 1) {
+                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
+					double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
+					double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
+					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge, 
+						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge);
                 }
                 else {
-                    gl.glVertex2d(path.get(i).getNode1().getX(), path.get(i).getNode1().getY());
-                    gl.glVertex2d(path.get(i).getNode2().getX(), path.get(i).getNode2().getY());
+                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
+                    gl.glVertex2d(path.get(i).node.getX(), path.get(i).node.getY());
+					reached.add(path.get(i).node);
                 }
-                if (Graph.containsNode(previous, path.get(i).getNode1())) {
-                    previous.add(path.get(i).getNode2());
-                }
-                else {
-                    previous.add(path.get(i).getNode1());
-                }
+				
             }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
             ++pathCounter;
-            if (!(numEdgesToDraw > path.size())) {
-                previous.remove(previous.size() - 1);
-            }
-            return previous;
         }
-        return null;
-    }
+		return reached;
+	}
 
     private void drawReached(GL2 gl, List<Node> reached) {
         for (Node n: reached) {

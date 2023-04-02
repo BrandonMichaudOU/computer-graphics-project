@@ -26,7 +26,7 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
-    private List<Edge> path;
+	private List<SearchNode> path;
 	//private Node edgeStart;
 	private Point2D.Double pan;
 	private double zoom;
@@ -61,7 +61,7 @@ public final class Model
 		return graph.getEdges();
 	}
 
-    public List<Edge>   getPath()
+	public List<SearchNode>   getPath()
     {
         return path;
     }
