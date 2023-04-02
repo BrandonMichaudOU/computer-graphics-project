@@ -59,6 +59,12 @@ public final class KeyHandler extends KeyAdapter
 				model.clearPath();
 				view.pathCounter = 120;
 				break;
+			case KeyEvent.VK_A:
+				model.setSpeed(model.getSpeed() / 1.1);
+				break;
+			case KeyEvent.VK_S:
+				model.setSpeed(model.getSpeed() * 1.1);
+				break;
 			case KeyEvent.VK_LEFT:
 				model.setPan(currPan.x - a, currPan.y);
 				break;

@@ -71,10 +71,11 @@ public final class View
 	private float				defaultline = 1.0f;		// normal thickness
 	private float				thickline = 2.5f;		// bold thickness
 
-    public int                 pathCounter = 120;
+    public double                 pathCounter = 120;
 
 	private Point2D.Double 		pan;
-	private double					zoom;
+	private double				zoom;
+	private double				speed;
 
 
 
@@ -103,6 +104,7 @@ public final class View
 
 		pan = model.getPan();
 		zoom = model.getZoom();
+		speed = model.getSpeed();
 	}
 
 	//**********************************************************************
@@ -167,6 +169,7 @@ public final class View
 
 		pan = model.getPan();
 		zoom = model.getZoom();
+		speed = model.getSpeed();
 	}
 
     private void buildGraphOne() {
@@ -277,8 +280,8 @@ public final class View
 		List<SearchNode> path = model.getPath();
 		ArrayList<Node> reached = new ArrayList<>();
         if (path != null) {
-            int numNodesToDraw = (pathCounter / 121) + 1;
-            double proportionOfFinalEdge = (pathCounter % 121) / 120.0;
+            int numNodesToDraw = ((int) pathCounter / 121) + 1;
+            double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
             for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
@@ -302,7 +305,7 @@ public final class View
             }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
-            ++pathCounter;
+            pathCounter += speed;
         }
 		return reached;
 	}
