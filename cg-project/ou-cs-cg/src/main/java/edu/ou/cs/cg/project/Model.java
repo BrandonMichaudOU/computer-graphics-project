@@ -3,6 +3,7 @@ package edu.ou.cs.cg.project;
 //import java.lang.*;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.*;
 import com.jogamp.opengl.*;
 
@@ -25,8 +26,11 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
-    private List<Edge> path;
-	private Node edgeStart;
+	private List<SearchNode> path;
+	//private Node edgeStart;
+	private Point2D.Double pan;
+	private double zoom;
+	private double speed;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -39,7 +43,10 @@ public final class Model
 		// Initialize user-adjustable variables (with reasonable default values)
 		graph = new Graph();
         path = null;
-		edgeStart = null;
+		pan = new Point2D.Double();
+		zoom = 1;
+		speed = 1;
+		//edgeStart = null;
 	}
 
 	//**********************************************************************
@@ -56,7 +63,7 @@ public final class Model
 		return graph.getEdges();
 	}
 
-    public List<Edge>   getPath()
+	public List<SearchNode>   getPath()
     {
         return path;
     }
@@ -71,6 +78,21 @@ public final class Model
         return graph.getEnd();
     }
 
+	public Point2D.Double	getPan()
+	{
+		return (Point2D.Double) pan.clone();
+	}
+
+	public double	getZoom()
+	{
+		return zoom;
+	}
+
+	public double getSpeed()
+	{
+		return speed;
+	}
+
 	//**********************************************************************
 	// Public Methods (Modify Variables)
 	//**********************************************************************
@@ -80,7 +102,7 @@ public final class Model
 			public void	update(GL2 gl) {
 				graph.clearGraph();
 				path = null;
-				edgeStart = null;
+				//edgeStart = null;
 			}
 		});
 	}
@@ -154,6 +176,30 @@ public final class Model
                     return;
                 }
 				graph.setStart(idx);
+			}
+		});
+    }
+
+	public void setPan(double x, double y) {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				pan = new Point2D.Double(x, y);
+			}
+		});
+    }
+
+	public void setZoom(double x) {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				zoom = x;
+			}
+		});
+    }
+
+	public void setSpeed(double x) {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				speed= x;
 			}
 		});
     }

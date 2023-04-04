@@ -110,33 +110,39 @@ public class Graph {
         end = idx;
     }
 
-    public List<Edge> BFS() {
+    public List<SearchNode> BFS() {
         if (start == -1 || nodes.size() == 0) {
             return null;
         }
-        ArrayList<Edge> path = new ArrayList<>();
+        ArrayList<SearchNode> path = new ArrayList<>();
+        SearchNode root = new SearchNode(getStart());
+        path.add(root);
 
         ArrayList<Node> seen = new ArrayList<>();
-        Queue<Node> q = new LinkedList<Node>();
-        q.add(nodes.get(start));
-        seen.add(nodes.get(start));
+        Queue<SearchNode> q = new LinkedList<>();
+        q.add(root);
+        seen.add(root.node);
         while (!q.isEmpty()) {
-            Node n = q.poll();
+            SearchNode n = q.poll();
             for (Edge e: edges){
-                if (n.equals(e.getNode1())) {
+                if (n.node.equals(e.getNode1())) {
                     Node n2 = e.getNode2();
+                    SearchNode child = new SearchNode(n2);
+                    child.parent = n;
                     if (!containsNode(seen, n2)) {
-                        q.add(n2);
+                        q.add(child);
                         seen.add(n2);
-                        path.add(e);
+                        path.add(child);
                     }
                 }
-                else if (n.equals(e.getNode2())) {
+                else if (n.node.equals(e.getNode2())) {
                     Node n1 = e.getNode1();
+                    SearchNode child = new SearchNode(n1);
+                    child.parent = n;
                     if (!containsNode(seen, n1)) {
-                        q.add(n1);
+                        q.add(child);
                         seen.add(n1);
-                        path.add(e);
+                        path.add(child);
                     }
                 }
             }
@@ -144,41 +150,48 @@ public class Graph {
         return Collections.unmodifiableList(path);
     }
 
-    public List<Edge> DFS() {
+    public List<SearchNode> DFS() {
         if (start == -1 || nodes.size() == 0) {
             return null;
         }
-        ArrayList<Edge> path = new ArrayList<>();
+        ArrayList<SearchNode> path = new ArrayList<>();
+        SearchNode root = new SearchNode(getStart());
+        path.add(root);
+
         ArrayList<Node> seen = new ArrayList<>();
-        seen.add(nodes.get(start));
-        recursiveDFS(nodes.get(start), seen, path);
+        seen.add(root.node);
+        recursiveDFS(root, seen, path);
         
         return Collections.unmodifiableList(path);
     }
 
-    public void recursiveDFS(Node n, List<Node> seen, List<Edge> path) {
+    public void recursiveDFS(SearchNode n, List<Node> seen, List<SearchNode> path) {
         List<Edge> unseenConnected = getUnseenConnected(n, seen);
         for (Edge e: unseenConnected) {
-            if (n.equals(e.getNode1()) && !containsNode(seen, e.getNode2())) {
-                path.add(e);
+            if (n.node.equals(e.getNode1()) && !containsNode(seen, e.getNode2())) {
+                SearchNode child = new SearchNode(e.getNode2());
+                child.parent = n;
+                path.add(child);
                 seen.add(e.getNode2());
-                recursiveDFS(e.getNode2(), seen, path);
+                recursiveDFS(child, seen, path);
             }
             else if (!containsNode(seen, e.getNode1())) {
-                path.add(e);
+                SearchNode child = new SearchNode(e.getNode1());
+                child.parent = n;
+                path.add(child);
                 seen.add(e.getNode1());
-                recursiveDFS(e.getNode1(), seen, path);
+                recursiveDFS(child, seen, path);
             }
         }
     }
 
-    public List<Edge> getUnseenConnected(Node n, List<Node> seen) {
+    public List<Edge> getUnseenConnected(SearchNode n, List<Node> seen) {
         ArrayList<Edge> connected = new ArrayList<>();
         for (Edge e: edges) {
-            if (e.getNode1().equals(n) && !containsNode(seen, e.getNode2())) {
+            if (e.getNode1().equals(n.node) && !containsNode(seen, e.getNode2())) {
                 connected.add(e);
             }
-            else if (e.getNode2().equals(n) && !containsNode(seen, e.getNode1())) {
+            else if (e.getNode2().equals(n.node) && !containsNode(seen, e.getNode1())) {
                 connected.add(e);
             }
         }
