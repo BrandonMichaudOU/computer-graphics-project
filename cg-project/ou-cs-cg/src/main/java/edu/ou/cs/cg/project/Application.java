@@ -83,18 +83,18 @@ public final class Application
 		//frame.getContentPane().add(canvas);
 		JPanel 			panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(canvas);
 		frame.getContentPane().add(panel);
 
 		JLabel label = new JLabel("Select the Graph Algorithm to run.");
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(label);
-
+		
 		String[] choices = {"Breadth-First-Search", "Depth-First-Search", "Shortest-Path"};
 		final JComboBox<String> cb = new JComboBox<String>(choices);
 		cb.setMaximumSize(cb.getPreferredSize());
 		cb.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(cb);
+		panel.add(canvas);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
