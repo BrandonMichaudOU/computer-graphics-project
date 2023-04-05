@@ -3,7 +3,6 @@ package edu.ou.cs.cg.project;
 //import java.lang.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -12,6 +11,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.*;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
 
@@ -49,6 +49,7 @@ public final class View
 	private int						w;			// Canvas width
 	private int						h;			// Canvas height
 
+	private TextRenderer				renderer;
 	private final FPSAnimator			animator;
 	private int						k;	// Frame counter
 
@@ -135,6 +136,9 @@ public final class View
 		w = drawable.getSurfaceWidth();
 		h = drawable.getSurfaceHeight();
 
+		renderer = new TextRenderer(new Font("Monospaced", Font.PLAIN, 12),
+									true, true);
+
 		initPipeline(drawable);
 	}
 
@@ -220,6 +224,10 @@ public final class View
         if (reached != null) {
             drawReached(gl, reached);
         }
+
+		drawMode(drawable);						// Draw mode text
+
+		gl.glFlush();								// Finish and display
 	}
 
 	//**********************************************************************
@@ -317,6 +325,33 @@ public final class View
             edgeCircle(gl, n.getX(), n.getY(), radius);
         }
     }
+
+	private void	drawMode(GLAutoDrawable drawable)
+	{
+		GL2		gl = drawable.getGL().getGL2();
+
+		renderer.beginRendering(w, h);
+
+		// Draw all text in black
+		renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+
+		Point2D.Double	cursor = model.getCursor();
+
+		if (cursor != null)
+		{
+			String		sx = FORMAT.format(new Double(cursor.x));
+			String		sy = FORMAT.format(new Double(cursor.y));
+			String		s = "Pointer at (" + sx + "," + sy + ")";
+
+			renderer.draw(s, 2, 2);
+		}
+		else
+		{
+			renderer.draw("No Pointer", 2, 2);
+		}
+
+		renderer.endRendering();
+	}
 
 	//**********************************************************************
 	// Private Methods (Convenience Functions)

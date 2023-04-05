@@ -56,6 +56,14 @@ public final class Model
 	// Public Methods (Access Variables)
 	//**********************************************************************
 
+	public Point2D.Double	getCursor()
+	{
+		if (cursor == null)
+			return null;
+		else
+			return new Point2D.Double(cursor.x, cursor.y);
+	}
+
 	public List<Node>	getNodes()
 	{
 		return graph.getNodes();
