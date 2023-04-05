@@ -73,12 +73,14 @@ public final class MouseHandler extends MouseAdapter
 		// }
 	}
 
-	public void		mousePressed(MouseEvent e)
+	public void		mouseEntered(MouseEvent e)
 	{
+		model.setCursorInViewCoordinates(e.getPoint());
 	}
 
-	public void		mouseReleased(MouseEvent e)
+	public void		mouseExited(MouseEvent e)
 	{
+		model.setCursorInViewCoordinates(null);
 	}
 
 	//**********************************************************************
@@ -87,11 +89,12 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseDragged(MouseEvent e)
 	{
-		
+		model.setCursorInViewCoordinates(e.getPoint());
 	}
 
 	public void		mouseMoved(MouseEvent e)
 	{
+		model.setCursorInViewCoordinates(e.getPoint());
 	}
 
 	//**********************************************************************

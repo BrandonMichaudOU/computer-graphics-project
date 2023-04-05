@@ -26,8 +26,11 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
+	private Point2D.Double				cursor;	// Current cursor coords
 	private List<SearchNode> path;
+
 	//private Node edgeStart;
+
 	private Point2D.Double pan;
 	private double zoom;
 	private double speed;
@@ -239,6 +242,26 @@ public final class Model
 		});
     }
 
+	public void	setCursorInViewCoordinates(Point q)
+	{
+		if (q == null)
+		{
+			view.getCanvas().invoke(false, new BasicUpdater() {
+					public void	update(GL2 gl) {
+						cursor = null;
+					}
+				});;
+		}
+		else
+		{
+			view.getCanvas().invoke(false, new ViewPointUpdater(q) {
+					public void	update(double[] p) {
+						cursor = new Point2D.Double(p[0], p[1]);
+					}
+				});;
+		}
+	}
+
 	//**********************************************************************
 	// Inner Classes
 	//**********************************************************************
@@ -256,6 +279,28 @@ public final class Model
 		}
 
 		public abstract void	update(GL2 gl);
+	}
+
+	// Convenience class to simplify updates in cases in which the input is a
+	// single point in view coordinates (integers/pixels).
+	private abstract class ViewPointUpdater extends BasicUpdater
+	{
+		private final Point	q;
+
+		public ViewPointUpdater(Point q)
+		{
+			this.q = q;
+		}
+
+		public final void	update(GL2 gl)
+		{
+			int		h = view.getHeight();
+			double[]	p = edu.ou.cs.cg.utilities.Utilities.mapViewToScene(gl, q.x, h - q.y, 0.0);
+
+			update(p);
+		}
+
+		public abstract void	update(double[] p);
 	}
 
 	//**********************************************************************
