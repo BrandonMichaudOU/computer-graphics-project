@@ -77,7 +77,7 @@ public final class View
 	private Point2D.Double 		pan;
 	private double				zoom;
 	private double				speed;
-
+	private int					pause;
 
 
 	//**********************************************************************
@@ -106,6 +106,7 @@ public final class View
 		pan = model.getPan();
 		zoom = model.getZoom();
 		speed = model.getSpeed();
+		pause = model.getPause();
 	}
 
 	//**********************************************************************
@@ -174,6 +175,7 @@ public final class View
 		pan = model.getPan();
 		zoom = model.getZoom();
 		speed = model.getSpeed();
+		pause = model.getPause();
 	}
 
     private void buildGraphOne() {
@@ -313,7 +315,7 @@ public final class View
             }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
-            pathCounter += speed;
+            pathCounter += pause * speed;
         }
 		return reached;
 	}

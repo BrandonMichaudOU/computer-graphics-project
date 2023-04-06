@@ -34,6 +34,7 @@ public final class Model
 	private Point2D.Double pan;
 	private double zoom;
 	private double speed;
+	private int pause;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -49,6 +50,7 @@ public final class Model
 		pan = new Point2D.Double();
 		zoom = 1;
 		speed = 1;
+		pause = 1;
 		//edgeStart = null;
 	}
 
@@ -102,6 +104,11 @@ public final class Model
 	public double getSpeed()
 	{
 		return speed;
+	}
+
+	public int getPause()
+	{
+		return pause;
 	}
 
 	//**********************************************************************
@@ -211,6 +218,19 @@ public final class Model
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
 				speed= x;
+			}
+		});
+    }
+
+	public void togglePause() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				if (pause == 1) {
+					pause = 0;
+				}
+				else {
+					pause = 1;
+				}
 			}
 		});
     }

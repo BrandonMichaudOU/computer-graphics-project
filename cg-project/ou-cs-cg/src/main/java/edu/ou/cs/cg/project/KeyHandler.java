@@ -65,6 +65,9 @@ public final class KeyHandler extends KeyAdapter
 			case KeyEvent.VK_S:
 				model.setSpeed(model.getSpeed() * 1.1);
 				break;
+			case KeyEvent.VK_P:
+				model.togglePause();;
+				break;
 			case KeyEvent.VK_LEFT:
 				model.setPan(currPan.x - a, currPan.y);
 				break;
