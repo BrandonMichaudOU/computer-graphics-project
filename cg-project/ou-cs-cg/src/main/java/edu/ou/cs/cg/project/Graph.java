@@ -116,6 +116,7 @@ public class Graph {
         }
         ArrayList<SearchNode> path = new ArrayList<>();
         SearchNode root = new SearchNode(getStart());
+        root.depth = 0;
         path.add(root);
 
         ArrayList<Node> seen = new ArrayList<>();
@@ -129,6 +130,7 @@ public class Graph {
                     Node n2 = e.getNode2();
                     SearchNode child = new SearchNode(n2);
                     child.parent = n;
+                    child.depth = child.parent.depth + 1;
                     if (!containsNode(seen, n2)) {
                         q.add(child);
                         seen.add(n2);
@@ -139,6 +141,7 @@ public class Graph {
                     Node n1 = e.getNode1();
                     SearchNode child = new SearchNode(n1);
                     child.parent = n;
+                    child.depth = child.parent.depth + 1;
                     if (!containsNode(seen, n1)) {
                         q.add(child);
                         seen.add(n1);
@@ -171,6 +174,7 @@ public class Graph {
             if (n.node.equals(e.getNode1()) && !containsNode(seen, e.getNode2())) {
                 SearchNode child = new SearchNode(e.getNode2());
                 child.parent = n;
+                child.depth = child.parent.depth + 1;
                 path.add(child);
                 seen.add(e.getNode2());
                 recursiveDFS(child, seen, path);
@@ -178,6 +182,7 @@ public class Graph {
             else if (!containsNode(seen, e.getNode1())) {
                 SearchNode child = new SearchNode(e.getNode1());
                 child.parent = n;
+                child.depth = child.parent.depth + 1;
                 path.add(child);
                 seen.add(e.getNode1());
                 recursiveDFS(child, seen, path);

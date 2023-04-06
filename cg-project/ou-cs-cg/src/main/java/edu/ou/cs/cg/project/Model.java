@@ -26,11 +26,15 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
+	private Point2D.Double				cursor;	// Current cursor coords
 	private List<SearchNode> path;
+
 	//private Node edgeStart;
+
 	private Point2D.Double pan;
 	private double zoom;
 	private double speed;
+	private int pause;
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -46,6 +50,7 @@ public final class Model
 		pan = new Point2D.Double();
 		zoom = 1;
 		speed = 1;
+		pause = 1;
 		//edgeStart = null;
 	}
 	public void test(){
@@ -54,6 +59,14 @@ public final class Model
 	//**********************************************************************
 	// Public Methods (Access Variables)
 	//**********************************************************************
+
+	public Point2D.Double	getCursor()
+	{
+		if (cursor == null)
+			return null;
+		else
+			return new Point2D.Double(cursor.x, cursor.y);
+	}
 
 	public List<Node>	getNodes()
 	{
@@ -93,6 +106,11 @@ public final class Model
 	public double getSpeed()
 	{
 		return speed;
+	}
+
+	public int getPause()
+	{
+		return pause;
 	}
 
 	//**********************************************************************
@@ -206,6 +224,19 @@ public final class Model
 		});
     }
 
+	public void togglePause() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				if (pause == 1) {
+					pause = 0;
+				}
+				else {
+					pause = 1;
+				}
+			}
+		});
+    }
+
 	public void setEnd(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -241,6 +272,26 @@ public final class Model
 		});
     }
 
+	public void	setCursorInViewCoordinates(Point q)
+	{
+		if (q == null)
+		{
+			view.getCanvas().invoke(false, new BasicUpdater() {
+					public void	update(GL2 gl) {
+						cursor = null;
+					}
+				});;
+		}
+		else
+		{
+			view.getCanvas().invoke(false, new ViewPointUpdater(q) {
+					public void	update(double[] p) {
+						cursor = new Point2D.Double(p[0], p[1]);
+					}
+				});;
+		}
+	}
+
 	//**********************************************************************
 	// Inner Classes
 	//**********************************************************************
@@ -258,6 +309,28 @@ public final class Model
 		}
 
 		public abstract void	update(GL2 gl);
+	}
+
+	// Convenience class to simplify updates in cases in which the input is a
+	// single point in view coordinates (integers/pixels).
+	private abstract class ViewPointUpdater extends BasicUpdater
+	{
+		private final Point	q;
+
+		public ViewPointUpdater(Point q)
+		{
+			this.q = q;
+		}
+
+		public final void	update(GL2 gl)
+		{
+			int		h = view.getHeight();
+			double[]	p = edu.ou.cs.cg.utilities.Utilities.mapViewToScene(gl, q.x, h - q.y, 0.0);
+
+			update(p);
+		}
+
+		public abstract void	update(double[] p);
 	}
 
 	//**********************************************************************
