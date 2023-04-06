@@ -98,8 +98,12 @@ public final class Application
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-
+		/* cb.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				
+			}
+		});	 */
+		
 
 		// Exit when the user clicks the frame's close button
 		frame.addWindowListener(new WindowAdapter() {
@@ -108,8 +112,10 @@ public final class Application
 				}
 			});
 
+		
+
 		// Create a view to manage the canvas
-		view = new View(canvas);
+		view = new View(canvas, cb);
 	}
 }
 

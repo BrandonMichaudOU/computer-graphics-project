@@ -22,7 +22,7 @@ public final class MouseHandler extends MouseAdapter
 	// State (internal) variables
 	private final View		view;
 	private final Model	model;
-
+	private final Component component;
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -32,7 +32,7 @@ public final class MouseHandler extends MouseAdapter
 		this.view = view;
 		this.model = model;
 
-		Component	component = view.getCanvas();
+		component = view.getCanvas();
 
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
@@ -92,6 +92,10 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseMoved(MouseEvent e)
 	{
+	}
+
+	public void mouseEntered(MouseEvent e){
+		component.requestFocusInWindow();
 	}
 
 	//**********************************************************************

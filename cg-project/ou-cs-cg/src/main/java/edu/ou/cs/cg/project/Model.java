@@ -48,7 +48,9 @@ public final class Model
 		speed = 1;
 		//edgeStart = null;
 	}
-
+	public void test(){
+		System.out.println("test");
+	}
 	//**********************************************************************
 	// Public Methods (Access Variables)
 	//**********************************************************************

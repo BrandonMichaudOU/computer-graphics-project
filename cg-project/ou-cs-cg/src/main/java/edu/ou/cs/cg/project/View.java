@@ -2,11 +2,15 @@ package edu.ou.cs.cg.project;
 
 //import java.lang.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
+
+import javax.swing.JComboBox;
 
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLJPanel;
@@ -83,7 +87,7 @@ public final class View
 	// Constructors and Finalizer
 	//**********************************************************************
 
-	public View(GLJPanel canvas)
+	public View(GLJPanel canvas, JComboBox cb)
 	{
 		this.canvas = canvas;
 
@@ -93,7 +97,11 @@ public final class View
 
 		// Initialize model (scene data and parameter manager)
 		model = new Model(this);
-
+		cb.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				model.test();
+			}
+		});
 		// Initialize controller (interaction handlers)
 		keyHandler = new KeyHandler(this, model);
 		mouseHandler = new MouseHandler(this, model);
