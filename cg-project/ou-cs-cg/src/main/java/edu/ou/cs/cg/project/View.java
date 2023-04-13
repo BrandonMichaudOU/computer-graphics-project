@@ -79,7 +79,6 @@ public final class View
 	private double				speed;
 	private int					pause;
 
-
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -295,14 +294,18 @@ public final class View
         if (path != null) {
             int numNodesToDraw = ((int) pathCounter / 121) + 1;
             double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+			int maxDepth = path.get(path.size() - 1).depth - 1;
+			int rgbIncrement = 255 / maxDepth;
+			int[] edgeColor = {0, 255, 255};
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
             for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
-				setColor(gl, 0, 255, 255);
                 if (j >= path.size()) {
                     break;
                 }
                 else if (i == numNodesToDraw - 1) {
+					int depth = path.get(i).depth - 1;
+					setColor(gl, edgeColor[0] + depth * rgbIncrement, edgeColor[1] - depth * rgbIncrement, edgeColor[2]);
                     gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 					double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 					double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
@@ -310,11 +313,12 @@ public final class View
 						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
                 }
                 else {
+					int depth = path.get(i).depth - 1;
+					setColor(gl, edgeColor[0] + depth * rgbIncrement, edgeColor[1] - depth * rgbIncrement, edgeColor[2]);
                     gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
                     gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
 					reached.add(path.get(i).node);
                 }
-				
             }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
