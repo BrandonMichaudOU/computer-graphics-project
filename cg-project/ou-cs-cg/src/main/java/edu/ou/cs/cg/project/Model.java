@@ -57,17 +57,13 @@ public final class Model
 		//edgeStart = null;
 		currentMode = "";
 	}
-	
-	public void changeMode(String mode){
-		currentMode = mode;
-	}
 
 	public void start(){
 		switch(currentMode){
 			case "Breadth-First-Search": BFS();break;
 			case "Depth-First-Search": DFS();break;
 			case "Shortest-Path": break;
-			default: break;
+			default: System.out.println("Please input a valid mode before starting.");break;
 		}
 	}
 
@@ -131,6 +127,14 @@ public final class Model
 	//**********************************************************************
 	// Public Methods (Modify Variables)
 	//**********************************************************************
+
+	public void changeMode(String mode){
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void update(GL2 gl){
+				currentMode = mode;
+			}
+		});
+	}
 
 	public void clearGraph() {
 		view.getCanvas().invoke(false, new BasicUpdater() {

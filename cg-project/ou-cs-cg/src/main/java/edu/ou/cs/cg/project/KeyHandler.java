@@ -49,12 +49,12 @@ public final class KeyHandler extends KeyAdapter
 		double			a = (Utilities.isShiftDown(e) ? 10 : 100);
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_B:
+			/* case KeyEvent.VK_B:
 				model.BFS();
 				break;
 			case KeyEvent.VK_D:
 				model.DFS();
-				break;
+				break; */
 			case KeyEvent.VK_Q:
 				model.clearPath();
 				view.pathCounter = 120;
@@ -79,6 +79,9 @@ public final class KeyHandler extends KeyAdapter
 				break;
 			case KeyEvent.VK_UP:
 				model.setPan(currPan.x, currPan.y + a);
+				break;
+			case KeyEvent.VK_SPACE:
+				model.start();
 				break;
 			// case KeyEvent.VK_C:
 			// 	model.clearGraph();
