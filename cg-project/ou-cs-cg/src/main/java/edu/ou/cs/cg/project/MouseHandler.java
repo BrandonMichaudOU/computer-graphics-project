@@ -76,6 +76,7 @@ public final class MouseHandler extends MouseAdapter
 	public void		mouseEntered(MouseEvent e)
 	{
 		model.setCursorInViewCoordinates(e.getPoint());
+		component.requestFocusInWindow();
 	}
 
 	public void		mouseExited(MouseEvent e)
@@ -95,10 +96,6 @@ public final class MouseHandler extends MouseAdapter
 	public void		mouseMoved(MouseEvent e)
 	{
 		model.setCursorInViewCoordinates(e.getPoint());
-	}
-
-	public void mouseEntered(MouseEvent e){
-		component.requestFocusInWindow();
 	}
 
 	//**********************************************************************

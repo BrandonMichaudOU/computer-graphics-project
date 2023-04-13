@@ -89,7 +89,7 @@ public final class Application
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(label);
 		
-		String[] choices = {"Breadth-First-Search", "Depth-First-Search", "Shortest-Path"};
+		String[] choices = {"", "Breadth-First-Search", "Depth-First-Search", "Shortest-Path"};
 		final JComboBox<String> cb = new JComboBox<String>(choices);
 		cb.setMaximumSize(cb.getPreferredSize());
 		cb.setAlignmentX(Component.CENTER_ALIGNMENT);

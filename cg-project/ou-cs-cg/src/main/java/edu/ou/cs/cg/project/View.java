@@ -88,7 +88,7 @@ public final class View
 	// Constructors and Finalizer
 	//**********************************************************************
 
-	public View(GLJPanel canvas, JComboBox cb)
+	public View(GLJPanel canvas, JComboBox<String> cb)
 	{
 		this.canvas = canvas;
 
@@ -100,9 +100,9 @@ public final class View
 		model = new Model(this);
 		cb.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				model.test();
+				model.changeMode(cb.getSelectedItem().toString());
 			}
-		});
+		}); 
 		// Initialize controller (interaction handlers)
 		keyHandler = new KeyHandler(this, model);
 		mouseHandler = new MouseHandler(this, model);

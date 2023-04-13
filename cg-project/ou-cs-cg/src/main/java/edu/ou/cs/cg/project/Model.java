@@ -5,6 +5,9 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.util.*;
+
+import javax.swing.JComboBox;
+
 import com.jogamp.opengl.*;
 
 //******************************************************************************
@@ -35,7 +38,7 @@ public final class Model
 	private double zoom;
 	private double speed;
 	private int pause;
-
+	private String currentMode;
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -52,10 +55,22 @@ public final class Model
 		speed = 1;
 		pause = 1;
 		//edgeStart = null;
+		currentMode = "";
 	}
-	public void test(){
-		System.out.println("test");
+	
+	public void changeMode(String mode){
+		currentMode = mode;
 	}
+
+	public void start(){
+		switch(currentMode){
+			case "Breadth-First-Search": BFS();break;
+			case "Depth-First-Search": DFS();break;
+			case "Shortest-Path": break;
+			default: break;
+		}
+	}
+
 	//**********************************************************************
 	// Public Methods (Access Variables)
 	//**********************************************************************
