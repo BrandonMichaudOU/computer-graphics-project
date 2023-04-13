@@ -84,6 +84,8 @@ public final class View
 	private int					pause;
 
 
+	private int 				maxDepth;
+
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -229,7 +231,7 @@ public final class View
 		setProjection(gl);							// Use screen coordinates
         
         drawEdges(gl);
-		List<Node> reached = drawPath(gl);
+		List<SearchNode> reached = drawPath(gl);
         drawNodes(gl);
         if (reached != null) {
             drawReached(gl, reached);
@@ -259,7 +261,10 @@ public final class View
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);		// Prepare for matrix xform
 		gl.glLoadIdentity();						// Set to identity matrix
-		glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
+		double[] projection = model.getProjection();
+		glu.gluOrtho2D(projection[0], projection[1], projection[2], projection[3]);
+
+		//glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
 	}
 
     //************************************ ***********************************
@@ -294,32 +299,32 @@ public final class View
         }
     }
 
-	private List<Node> drawPath(GL2 gl) {
+	private List<SearchNode> drawPath(GL2 gl) {
 		List<SearchNode> path = model.getPath();
-		ArrayList<Node> reached = new ArrayList<>();
+		ArrayList<SearchNode> reached = new ArrayList<>();
         if (path != null) {
             int numNodesToDraw = ((int) pathCounter / 121) + 1;
             double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+			maxDepth = path.get(path.size() - 1).depth;
             gl.glLineWidth(edgeLine);				// set the line width to the default
             gl.glBegin(GL.GL_LINES);
             for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
-				setColor(gl, 0, 255, 255);
+				setColor(gl, 0, 255, 0);
                 if (j >= path.size()) {
                     break;
                 }
                 else if (i == numNodesToDraw - 1) {
-                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
+                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 					double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 					double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
-					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge, 
-						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge);
+					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
                 }
                 else {
-                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
-                    gl.glVertex2d(path.get(i).node.getX(), path.get(i).node.getY());
-					reached.add(path.get(i).node);
+                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+                    gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
+					reached.add(path.get(i));
                 }
-				
             }
             gl.glEnd();
             gl.glLineWidth(defaultLine);
@@ -328,12 +333,17 @@ public final class View
 		return reached;
 	}
 
-    private void drawReached(GL2 gl, List<Node> reached) {
-        for (Node n: reached) {
-            setColor(gl, 0, 255, 0);
-            fillCircle(gl, n.getX(), n.getY(), radius);
-            edgeCircle(gl, n.getX(), n.getY(), radius);
-        }
+    private void drawReached(GL2 gl, List<SearchNode> reached) {
+		if (reached.size() > 0) {
+			int rgbIncrement = 255 / maxDepth;
+			int[] nodeColor = {0, 255, 255};
+        	for (SearchNode n: reached) {
+				int depth = n.depth;
+				setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
+				fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
+				edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
+			}
+		}
     }
 
 	private void	drawMode(GLAutoDrawable drawable)

@@ -104,7 +104,7 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseWheelMoved(MouseWheelEvent e)
 	{
-		model.setZoom(model.getZoom() * Math.pow(1.1, -e.getWheelRotation()));
+		model.setZoom(Math.pow(1.1, -e.getWheelRotation()));
 	}
 
 	//**********************************************************************
