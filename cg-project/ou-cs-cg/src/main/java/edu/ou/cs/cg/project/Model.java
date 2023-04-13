@@ -238,6 +238,34 @@ public final class Model
 		});
     }
 
+	private double distance(Point2D.Double a, Point2D.Double b) 
+	{
+		double dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+		return dist;
+	}
+
+	public void setStart(Point mouse, boolean shift) {
+		view.getCanvas().invoke(false, new ViewPointUpdater(mouse) {
+			public void	update(double[] p) {
+                int i = 0;
+				for (Node n: graph.getNodes()) {
+					Point2D.Double newP = new Point2D.Double(p[0], p[1]);
+					double dist = distance(n.getPoint(), newP);
+					if (dist <= view.radius) {
+						if (shift) {
+							setEnd(i);
+						}
+						else {
+							setStart(i);
+						}
+						return;
+					}
+					++i;
+				}
+			}
+		});
+	}
+
 	public void setPan(double x, double y) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
