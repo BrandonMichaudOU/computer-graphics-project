@@ -251,7 +251,10 @@ public final class View
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);		// Prepare for matrix xform
 		gl.glLoadIdentity();						// Set to identity matrix
-		glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
+		double[] projection = model.getProjection();
+		glu.gluOrtho2D(projection[0], projection[1], projection[2], projection[3]);
+
+		//glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
 	}
 
     //************************************ ***********************************
@@ -300,15 +303,15 @@ public final class View
                     break;
                 }
                 else if (i == numNodesToDraw - 1) {
-                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
+                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 					double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 					double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
-					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge, 
-						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge);
+					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
                 }
                 else {
-                    gl.glVertex2d(path.get(i).parent.node.getX(), path.get(i).parent.node.getY());
-                    gl.glVertex2d(path.get(i).node.getX(), path.get(i).node.getY());
+                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+                    gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
 					reached.add(path.get(i).node);
                 }
 				
@@ -323,8 +326,8 @@ public final class View
     private void drawReached(GL2 gl, List<Node> reached) {
         for (Node n: reached) {
             setColor(gl, 0, 255, 0);
-            fillCircle(gl, n.getX(), n.getY(), radius);
-            edgeCircle(gl, n.getX(), n.getY(), radius);
+            fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, radius);
+            edgeCircle(gl, n.getX() + pan.x, n.getY() + pan.y, radius);
         }
     }
 

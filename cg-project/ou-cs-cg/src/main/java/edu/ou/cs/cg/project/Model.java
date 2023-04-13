@@ -36,6 +36,12 @@ public final class Model
 	private double speed;
 	private int pause;
 
+	// Projection variables
+	private double xmin;
+	private double xmax;
+	private double ymin;
+	private double ymax;
+
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -52,6 +58,11 @@ public final class Model
 		speed = 1;
 		pause = 1;
 		//edgeStart = null;
+
+		xmin = 0;
+		xmax = 1280;
+		ymin = 0;
+		ymax = 720;
 	}
 
 	//**********************************************************************
@@ -109,6 +120,12 @@ public final class Model
 	public int getPause()
 	{
 		return pause;
+	}
+
+	public double[] getProjection()
+	{
+		double[] projection = {xmin, xmax, ymin, ymax};
+		return projection;
 	}
 
 	//**********************************************************************
@@ -209,7 +226,11 @@ public final class Model
 	public void setZoom(double x) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				zoom = x;
+				zoom = zoom * x;
+				xmin = (xmin - cursor.x) * x + cursor.x;
+				xmax = (xmax - cursor.x) * x + cursor.x;
+				ymin = (ymin - cursor.y) * x + cursor.y;
+				ymax = (ymax - cursor.y) * x + cursor.y;
 			}
 		});
     }
