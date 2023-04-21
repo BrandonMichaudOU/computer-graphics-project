@@ -105,6 +105,7 @@ public final class View
 				model.changeMode(cb.getSelectedItem().toString());
 			}
 		}); 
+
 		// Initialize controller (interaction handlers)
 		keyHandler = new KeyHandler(this, model);
 		mouseHandler = new MouseHandler(this, model);
@@ -113,6 +114,7 @@ public final class View
 		animator = new FPSAnimator(canvas, DEFAULT_FRAMES_PER_SECOND);
 		animator.start();
 
+		// Initialize model variables controlling animation
 		pan = model.getPan();
 		zoom = model.getZoom();
 		speed = model.getSpeed();
@@ -177,18 +179,23 @@ public final class View
 	private void	update(GLAutoDrawable drawable)
 	{
 		k++;							// Advance animation counter
+
+		// Initialize the graph
         if (!init) {
             init = true;
             buildGraphOne();
         }
 
+		// Update the model animation variables
 		pan = model.getPan();
 		zoom = model.getZoom();
 		speed = model.getSpeed();
 		pause = model.getPause();
 	}
 
+	// Built in graph
     private void buildGraphOne() {
+		// Add nodes to graph
         ArrayList<Node> nodes = new ArrayList<>();
 		nodes.add(new Node(340, 680));
 		nodes.add(new Node(640, 680));
@@ -199,9 +206,9 @@ public final class View
 		nodes.add(new Node(340, 40));
 		nodes.add(new Node(640, 40));
 		nodes.add(new Node(940, 40));
-
         model.addNodes(nodes);
 
+		// Add edges to graph
         ArrayList<Edge> edges = new ArrayList<>();
 		edges.add(new Edge(nodes.get(0), nodes.get(1)));
 		edges.add(new Edge(nodes.get(0), nodes.get(3)));
@@ -217,7 +224,6 @@ public final class View
 		edges.add(new Edge(nodes.get(5), nodes.get(8)));
 		edges.add(new Edge(nodes.get(6), nodes.get(7)));
 		edges.add(new Edge(nodes.get(7), nodes.get(8)));
-
         model.addEdges(edges);
 	}
 
@@ -228,11 +234,14 @@ public final class View
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);	// White background
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);			// Clear the buffer
 
-		setProjection(gl);							// Use screen coordinates
+		setProjection(gl);							// Based off model
         
+		// Draw the graph without any animation
         drawEdges(gl);
-		List<SearchNode> reached = drawPath(gl);
         drawNodes(gl);
+
+		// Draw the animation path
+		List<SearchNode> reached = drawPath(gl);
         if (reached != null) {
             drawReached(gl, reached);
         }
@@ -261,91 +270,206 @@ public final class View
 
 		gl.glMatrixMode(GL2.GL_PROJECTION);		// Prepare for matrix xform
 		gl.glLoadIdentity();						// Set to identity matrix
+
+		// Get the projection from the model and apply it
 		double[] projection = model.getProjection();
 		glu.gluOrtho2D(projection[0], projection[1], projection[2], projection[3]);
-
-		//glu.gluOrtho2D(0.0f, 1280.0f * zoom, 0.0f, 720.0f * zoom);// 2D translate and scale
 	}
 
     //************************************ ***********************************
 	// Private Methods (Graph Functions)
 	//**********************************************************************
+	// Draw the edges
     private void drawEdges(GL2 gl) {
+		// Set the color and thickness of edges, based on model animation variables
         setColor(gl, 0, 0, 0);
-        gl.glLineWidth(edgeLine / (float) zoom);				// set the line width to the default
+        gl.glLineWidth(edgeLine / (float) zoom);
+
+		// Draw each edge in the model
         gl.glBegin(GL.GL_LINES);
         for (Edge e: model.getEdges()) {
-            gl.glVertex2d(e.getNode1().getX() * 1 + pan.x, e.getNode1().getY() * 1 + pan.y);
-            gl.glVertex2d(e.getNode2().getX() * 1 + pan.x, e.getNode2().getY() * 1 + pan.y);
+            gl.glVertex2d(e.getNode1().getX() + pan.x, e.getNode1().getY() + pan.y);
+            gl.glVertex2d(e.getNode2().getX() + pan.x, e.getNode2().getY() + pan.y);
         }
         gl.glEnd();
+
+		// Reset the line width
         gl.glLineWidth(defaultLine);
     }
 
+	// Draw the nodes
     private void drawNodes(GL2 gl) {
+		// Draw each node in the model
         for (Node n: model.getNodes()) {
+			// If the node is the start, draw it blue
             if (n.isStart()) {
                 setColor(gl, 0, 0, 255);
             }
+			// If the node is the end, draw it purple
 			else if (n.isEnd()) {
 				setColor(gl, 255, 0, 255);
 			}
+			// Otherwise, draw the node red
             else {
                 setColor(gl, 255, 0, 0);
             }
+
+			// Draw a circle for the node
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x * 1 + pan.x, p.y * 1 + pan.y, radius);
-            edgeCircle(gl, p.x * 1 + pan.x, p.y * 1 + pan.y, radius);
+            fillCircle(gl, p.x + pan.x, p.y + pan.y, radius);
+            edgeCircle(gl, p.x + pan.x, p.y + pan.y, radius);
         }
     }
 
+	// Draw the path
 	private List<SearchNode> drawPath(GL2 gl) {
+		// Get the path from the model
 		List<SearchNode> path = model.getPath();
-		ArrayList<SearchNode> reached = new ArrayList<>();
+
+		// Create a variable for holding reached nodes
+		List<SearchNode> reached = null;
+
+		// If there is a path, draw it accordingly
         if (path != null) {
-            int numNodesToDraw = ((int) pathCounter / 121) + 1;
-            double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-			maxDepth = path.get(path.size() - 1).depth;
-            gl.glLineWidth(edgeLine);				// set the line width to the default
-            gl.glBegin(GL.GL_LINES);
-            for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
-				setColor(gl, 0, 255, 0);
-                if (j >= path.size()) {
-                    break;
-                }
-                else if (i == numNodesToDraw - 1) {
-                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-					double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
-					double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
-					gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
-						path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
-                }
-                else {
-                    gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-                    gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
-					reached.add(path.get(i));
-                }
-            }
-            gl.glEnd();
-            gl.glLineWidth(defaultLine);
-            pathCounter += pause * speed;
+			// Get the path type from the model
+			boolean[] pathType = model.getPathType();
+
+			// If the path is BFS, draw it
+			if (pathType[0]) {
+				reached = drawBFS(gl, path);
+			}
+			// If the path is DFS, draw it
+			else if (pathType[1]) {
+				reached = drawDFS(gl, path);
+			}
+			// If the path is shortest path, draw it
+			else if (pathType[2]) {
+				reached = drawShortestPath(gl, path);
+			}
         }
+
+		// Return the list of reached nodes
 		return reached;
 	}
 
+	// Draw BFS
+	public List<SearchNode> drawBFS(GL2 gl, List<SearchNode> path) {
+		ArrayList<SearchNode> reached = new ArrayList<>();
+		int numNodesToDraw = ((int) pathCounter / 121) + 1;
+		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+		maxDepth = path.get(path.size() - 1).depth;
+		gl.glLineWidth(edgeLine);				// set the line width to the default
+		gl.glBegin(GL.GL_LINES);
+		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
+			setColor(gl, 0, 255, 0);
+			if (j >= path.size()) {
+				break;
+			}
+			else if (i == numNodesToDraw - 1) {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
+				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
+				gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
+			}
+			else {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
+				reached.add(path.get(i));
+			}
+		}
+		gl.glEnd();
+		gl.glLineWidth(defaultLine);
+		pathCounter += pause * speed;
+		return reached;
+	}
+
+	// Draw DFS
+	public List<SearchNode> drawDFS(GL2 gl, List<SearchNode> path) {
+		ArrayList<SearchNode> reached = new ArrayList<>();
+		int numNodesToDraw = ((int) pathCounter / 121) + 1;
+		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+		maxDepth = path.get(path.size() - 1).depth;
+		gl.glLineWidth(edgeLine);				// set the line width to the default
+		gl.glBegin(GL.GL_LINES);
+		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
+			setColor(gl, 0, 255, 0);
+			if (j >= path.size()) {
+				break;
+			}
+			else if (i == numNodesToDraw - 1) {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
+				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
+				gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
+			}
+			else {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
+				reached.add(path.get(i));
+			}
+		}
+		gl.glEnd();
+		gl.glLineWidth(defaultLine);
+		pathCounter += pause * speed;
+		return reached;
+	}
+
+	// Draw shortest path
+	public List<SearchNode> drawShortestPath(GL2 gl, List<SearchNode> path) {
+		ArrayList<SearchNode> reached = new ArrayList<>();
+		int numNodesToDraw = ((int) pathCounter / 121) + 1;
+		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+		maxDepth = path.get(path.size() - 1).depth;
+		gl.glLineWidth(edgeLine);				// set the line width to the default
+		gl.glBegin(GL.GL_LINES);
+		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
+			setColor(gl, 0, 255, 0);
+			if (j >= path.size()) {
+				break;
+			}
+			else if (i == numNodesToDraw - 1) {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
+				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
+				gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
+			}
+			else {
+				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
+				reached.add(path.get(i));
+			}
+		}
+		gl.glEnd();
+		gl.glLineWidth(defaultLine);
+		pathCounter += pause * speed;
+		return reached;
+	}
+
+	// Draw a list of reached nodes
     private void drawReached(GL2 gl, List<SearchNode> reached) {
+		// Draw the reached nodes, if any
 		if (reached.size() > 0) {
+			// Declare variables for cyan to purple gradient
 			int rgbIncrement = 255 / maxDepth;
 			int[] nodeColor = {0, 255, 255};
+
+			// Draw each node
         	for (SearchNode n: reached) {
+				// Set the color based on the depth
 				int depth = n.depth;
 				setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
+
+				// Draw a circle for the reached node
 				fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
 				edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
 			}
 		}
     }
 
+	// Draw text
 	private void	drawMode(GLAutoDrawable drawable)
 	{
 		GL2		gl = drawable.getGL().getGL2();
@@ -357,6 +481,7 @@ public final class View
 
 		Point2D.Double	cursor = model.getCursor();
 
+		// Draw the cursor location
 		if (cursor != null)
 		{
 			String		sx = FORMAT.format(new Double(cursor.x));
@@ -389,54 +514,6 @@ public final class View
 		setColor(gl, r, g, b, 255);
 	}
 
-	// Fills a rectangle having lower left corner at (x,y) and dimensions (w,h).
-	private void	fillRect(GL2 gl, int x, int y, int w, int h)
-	{
-		gl.glBegin(GL2.GL_POLYGON);
-
-		gl.glVertex2i(x+0, y+0);
-		gl.glVertex2i(x+0, y+h);
-		gl.glVertex2i(x+w, y+h);
-		gl.glVertex2i(x+w, y+0);
-
-		gl.glEnd();
-	}
-
-	// Edges a rectangle having lower left corner at (x,y) and dimensions (w,h).
-	private void	edgeRect(GL2 gl, int x, int y, int w, int h)
-	{
-		gl.glBegin(GL.GL_LINE_LOOP);
-
-		gl.glVertex2i(x+0, y+0);
-		gl.glVertex2i(x+0, y+h);
-		gl.glVertex2i(x+w, y+h);
-		gl.glVertex2i(x+w, y+0);
-
-		gl.glEnd();
-	}
-
-	// Fills a polygon defined by a starting point and a sequence of offsets.
-	private void	fillPoly(GL2 gl, int startx, int starty, Point[] offsets)
-	{
-		gl.glBegin(GL2.GL_POLYGON);
-
-		for (int i=0; i<offsets.length; i++)
-			gl.glVertex2i(startx + offsets[i].x, starty + offsets[i].y);
-
-		gl.glEnd();
-	}
-
-	// Edges a polygon defined by a starting point and a sequence of offsets.
-	private void	edgePoly(GL2 gl, int startx, int starty, Point[] offsets)
-	{
-		gl.glBegin(GL2.GL_LINE_LOOP);
-
-		for (int i=0; i<offsets.length; i++)
-			gl.glVertex2i(startx + offsets[i].x, starty + offsets[i].y);
-
-		gl.glEnd();
-	}
-
 	// fills a circle defined by the center and radius
 	private void fillCircle(GL2 gl, double cx, double cy, double r) {
 		fillEllipse(gl, cx, cy, r, r);
@@ -463,53 +540,6 @@ public final class View
 		for (int i = 0; i < 32; i++) {
 			double angle = i * 2.0 * Math.PI / 32;
 			gl.glVertex2d(cx + (a * Math.cos(angle)), cy + (b * Math.sin(angle)));
-		}
-		gl.glEnd();
-	}
-
-	// fills a stellation given the center, radius, number of sides, and skip number
-	private void fillStar(GL2 gl, double cx, double cy, double r, int sides, int skip) {
-		// Use the given (outer) radius to find inner radius
-		double r1 = r;
-		double r2 = r * (Math.cos(Math.PI * skip / sides) / Math.cos(Math.PI * (skip - 1) / sides));
-		if (sides == 4 || sides == 3) {
-			r2 = r1 / 3.0;
-		}
-
-		// Draw the star, alternating between radiuses
-		gl.glBegin(GL2.GL_TRIANGLE_FAN);
-		gl.glVertex2d(cx, cy);
-		for (int i = 0; i <= sides * 2; ++i) {
-			double angle = i * 2.0 * Math.PI / sides * 0.5 + Math.PI / 2;
-			if (i % 2 == 0) {
-				gl.glVertex2d(cx + (r1 * Math.cos(angle)), cy + (r1 * Math.sin(angle)));
-			}
-			else {
-				gl.glVertex2d(cx + (r2 * Math.cos(angle)), cy + (r2 * Math.sin(angle)));
-			}
-		}
-		gl.glEnd();
-	}
-
-	// edges a stellation given the center, radius, number of sides, and skip number
-	private void edgeStar(GL2 gl, double cx, double cy, double r, int sides, int skip) {
-		// Use the given (outer) radius to find inner radius
-		double r1 = r;
-		double r2 = r * (Math.cos(Math.PI * skip / sides) / Math.cos(Math.PI * (skip - 1) / sides));
-		if (sides == 4 || sides == 3) {
-			r2 = r1 / 3.0;
-		}
-
-		// Edge the star, alternating between radiuses
-		gl.glBegin(GL2.GL_LINE_LOOP);
-		for (int i = 0; i <= sides * 2; ++i) {
-			double angle = i * 2.0 * Math.PI / sides * 0.5 + Math.PI / 2;
-			if (i % 2 == 0) {
-				gl.glVertex2d(cx + (r1 * Math.cos(angle)), cy + (r1 * Math.sin(angle)));
-			}
-			else {
-				gl.glVertex2d(cx + (r2 * Math.cos(angle)), cy + (r2 * Math.sin(angle)));
-			}
 		}
 		gl.glEnd();
 	}

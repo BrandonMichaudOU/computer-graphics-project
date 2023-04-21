@@ -29,11 +29,11 @@ public final class Model
 
 	// Model variables
 	private Graph graph;
-	private Point2D.Double				cursor;	// Current cursor coords
+	private Point2D.Double cursor;	// Current cursor coords
 	private List<SearchNode> path;
+	private boolean[] pathType;
 
-	//private Node edgeStart;
-
+	// Animation variables
 	private Point2D.Double pan;
 	private double zoom;
 	private double speed;
@@ -54,14 +54,14 @@ public final class Model
 	{
 		this.view = view;
 
-		// Initialize user-adjustable variables (with reasonable default values)
+		// Initialize model variables
 		graph = new Graph();
         path = null;
+		pathType = new boolean[] {false, false, false};
 		pan = new Point2D.Double();
 		zoom = 1;
 		speed = 1;
 		pause = 1;
-		//edgeStart = null;
 		currentMode = "";
 		xmin = 0;
 		xmax = 1280;
@@ -69,21 +69,11 @@ public final class Model
 		ymax = 720;
 	}
 
-	public void start(){
-		switch(currentMode){
-			case "Breadth-First-Search": BFS();break;
-			case "Depth-First-Search": DFS();break;
-			case "Shortest-Path": break;
-			default: System.out.println("Please input a valid mode before starting.");break;
-		}
-
-		
-	}
-
 	//**********************************************************************
 	// Public Methods (Access Variables)
 	//**********************************************************************
 
+	// Get the cursor
 	public Point2D.Double	getCursor()
 	{
 		if (cursor == null)
@@ -92,51 +82,67 @@ public final class Model
 			return new Point2D.Double(cursor.x, cursor.y);
 	}
 
+	// Get the list of nodes
 	public List<Node>	getNodes()
 	{
 		return graph.getNodes();
 	}
 
+	// Get the list of edges
     public List<Edge>	getEdges()
 	{
 		return graph.getEdges();
 	}
 
+	// Get the path
 	public List<SearchNode>   getPath()
     {
         return path;
     }
 
+	// Get the path type
+	public boolean[] 	getPathType()
+	{
+		return pathType;
+	}
+
+	// Get the start node
     public Node         getStart() 
     {
         return graph.getStart();
     }
 
+	// Get the end node
 	public Node         getEnd() 
     {
         return graph.getEnd();
     }
 
+	// Get the screen pan
 	public Point2D.Double	getPan()
 	{
 		return (Point2D.Double) pan.clone();
 	}
 
+	// Get the zoom level
 	public double	getZoom()
 	{
 		return zoom;
 	}
 
+	// Get the animation speed
 	public double getSpeed()
 	{
 		return speed;
 	}
 
+	// Get the pause input
 	public int getPause()
 	{
 		return pause;
 	}
 
+	// Get the screen projection
 	public double[] getProjection()
 	{
 		double[] projection = {xmin, xmax, ymin, ymax};
@@ -147,6 +153,7 @@ public final class Model
 	// Public Methods (Modify Variables)
 	//**********************************************************************
 
+	// Change the algorithm
 	public void changeMode(String mode){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
@@ -155,16 +162,7 @@ public final class Model
 		});
 	}
 
-	public void clearGraph() {
-		view.getCanvas().invoke(false, new BasicUpdater() {
-			public void	update(GL2 gl) {
-				graph.clearGraph();
-				path = null;
-				//edgeStart = null;
-			}
-		});
-	}
-
+	// Add a node to the graph
 	public void addNode(Node n) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -175,6 +173,7 @@ public final class Model
 		});
 	}
 
+	// Add an edge to the graph
 	public void addEdge(Edge e) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -185,6 +184,7 @@ public final class Model
 		});
 	}
 
+	// Add a list of nodes to the graph
     public void addNodes(List<Node> nodes) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -195,6 +195,7 @@ public final class Model
 		});
     }
 
+	// Add a list of edges to the graph
 	public void addEdges(List<Edge> edges) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -205,28 +206,7 @@ public final class Model
 		});
     }
 
-	// public void addPossibleEdge(Node n) {
-	// 	view.getCanvas().invoke(false, new BasicUpdater() {
-	// 		public void	update(GL2 gl) {
-	// 			if (edgeStart != null && !edgeStart.equals(n) && path == null) {
-	// 				graph.addEdge(new Edge(edgeStart, n));
-	// 				edgeStart = null;
-	// 			}
-	// 			else if (path == null) {
-	// 				edgeStart = n;
-	// 			}
-	// 		}
-	// 	});
-	// }
-
-	// public void removeNode(int i) {
-	// 	view.getCanvas().invoke(false, new BasicUpdater() {
-	// 		public void	update(GL2 gl) {
-	// 			graph.removeNode(i);;
-	// 		}
-	// 	});
-	// }
-
+	// Set the start node of the graph
     public void setStart(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -238,26 +218,35 @@ public final class Model
 		});
     }
 
+	// Find the distance between two points
 	private double distance(Point2D.Double a, Point2D.Double b) 
 	{
 		double dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 		return dist;
 	}
 
-	public void setStart(Point mouse, boolean shift) {
+	// Handle a mouse click
+	public void handleClick(Point mouse, boolean shift) {
 		view.getCanvas().invoke(false, new ViewPointUpdater(mouse) {
 			public void	update(double[] p) {
+				// Loop over nodes, keeping track of index
                 int i = 0;
 				for (Node n: graph.getNodes()) {
+					// Find the distance between mouse click and current node
 					Point2D.Double newP = new Point2D.Double(p[0], p[1]);
 					double dist = distance(n.getPoint(), newP);
+
+					// If the click occurred inside the node, handle it
 					if (dist <= view.radius) {
+						// If shift is down, set the current node to the end
 						if (shift) {
 							setEnd(i);
 						}
+						// Otherwise set the current node to the start
 						else {
 							setStart(i);
 						}
+						// Exit method
 						return;
 					}
 					++i;
@@ -266,6 +255,7 @@ public final class Model
 		});
 	}
 
+	// Set the screen pan
 	public void setPan(double x, double y) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -274,6 +264,7 @@ public final class Model
 		});
     }
 
+	// Set the zoom and update projection variables
 	public void setZoom(double x) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -286,14 +277,16 @@ public final class Model
 		});
     }
 
+	// Set the animation speed
 	public void setSpeed(double x) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				speed= x;
+				speed = x;
 			}
 		});
     }
 
+	// Toggle the pause functionality
 	public void togglePause() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -307,6 +300,7 @@ public final class Model
 		});
     }
 
+	// Set the end node
 	public void setEnd(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
@@ -318,30 +312,49 @@ public final class Model
 		});
     }
 
+	// Start the currently selected algorithm
+	public void start(){
+		switch(currentMode){
+			case "Breadth-First-Search": BFS();break;
+			case "Depth-First-Search": DFS();break;
+			case "Shortest-Path": break;
+			default: System.out.println("Please input a valid mode before starting.");break;
+		}
+	}
+
+	// Perform breadth first search
     public void BFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
+				pathType[0] = true;
 				path = graph.BFS();
 			}
 		});
     }
 
+	// Perform depth first search
 	public void DFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
+				pathType[1] = true;
 				path = graph.DFS();
 			}
 		});
     }
 
+	// Clear the path
     public void clearPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
+				for (int i = 0; i < pathType.length; ++i) {
+					pathType[i] = false;
+				}
 				path = null;
 			}
 		});
     }
 
+	// Set the cursor point
 	public void	setCursorInViewCoordinates(Point q)
 	{
 		if (q == null)

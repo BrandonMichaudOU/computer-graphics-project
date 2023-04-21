@@ -45,29 +45,35 @@ public final class KeyHandler extends KeyAdapter
 
 	public void		keyPressed(KeyEvent e)
 	{
+		// Get the current scene pan
 		Point2D.Double currPan = model.getPan();
-		double			a = (Utilities.isShiftDown(e) ? 10 : 100);
+
+		// Define pan increment
+		double a = (Utilities.isShiftDown(e) ? 10 : 100);
+
+		// Handle input
 		switch (e.getKeyCode())
 		{
-			/* case KeyEvent.VK_B:
-				model.BFS();
-				break;
-			case KeyEvent.VK_D:
-				model.DFS();
-				break; */
+			// Clear the path animation
 			case KeyEvent.VK_Q:
 				model.clearPath();
 				view.pathCounter = 120;
 				break;
+			
+			// Update the animation speed
 			case KeyEvent.VK_A:
 				model.setSpeed(model.getSpeed() / 1.1);
 				break;
 			case KeyEvent.VK_S:
 				model.setSpeed(model.getSpeed() * 1.1);
 				break;
+
+			// Pause the animation
 			case KeyEvent.VK_P:
 				model.togglePause();;
 				break;
+
+			// Pan the scene
 			case KeyEvent.VK_LEFT:
 				model.setPan(currPan.x - a, currPan.y);
 				break;
@@ -80,12 +86,11 @@ public final class KeyHandler extends KeyAdapter
 			case KeyEvent.VK_UP:
 				model.setPan(currPan.x, currPan.y + a);
 				break;
+			
+			// Start the animation
 			case KeyEvent.VK_SPACE:
 				model.start();
 				break;
-			// case KeyEvent.VK_C:
-			// 	model.clearGraph();
-			// 	break;
 		}
 	}
 }

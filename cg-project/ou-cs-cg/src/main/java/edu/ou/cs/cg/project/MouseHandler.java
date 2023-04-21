@@ -45,17 +45,20 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseClicked(MouseEvent e)
 	{
-		model.setStart(e.getPoint(), e.isShiftDown());
+		// Handle the click
+		model.handleClick(e.getPoint(), e.isShiftDown());
 	}
 
 	public void		mouseEntered(MouseEvent e)
 	{
+		// Set the cursor point
 		model.setCursorInViewCoordinates(e.getPoint());
 		component.requestFocusInWindow();
 	}
 
 	public void		mouseExited(MouseEvent e)
 	{
+		// Remove cursor point
 		model.setCursorInViewCoordinates(null);
 	}
 
@@ -65,11 +68,13 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseDragged(MouseEvent e)
 	{
+		// Update cursor point
 		model.setCursorInViewCoordinates(e.getPoint());
 	}
 
 	public void		mouseMoved(MouseEvent e)
 	{
+		// Update cursor point
 		model.setCursorInViewCoordinates(e.getPoint());
 	}
 
@@ -79,6 +84,7 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseWheelMoved(MouseWheelEvent e)
 	{
+		// Update the zoom
 		model.setZoom(Math.pow(1.1, -e.getWheelRotation()));
 	}
 
