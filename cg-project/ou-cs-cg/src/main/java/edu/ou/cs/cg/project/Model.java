@@ -317,7 +317,7 @@ public final class Model
 		switch(currentMode){
 			case "Breadth-First-Search": BFS();break;
 			case "Depth-First-Search": DFS();break;
-			case "Shortest-Path": break;
+			case "Shortest-Path": shortestPath();break;
 			default: System.out.println("Please input a valid mode before starting.");break;
 		}
 	}
@@ -338,6 +338,15 @@ public final class Model
 			public void	update(GL2 gl) {
 				pathType[1] = true;
 				path = graph.DFS();
+			}
+		});
+    }
+
+	public void shortestPath() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				pathType[2] = true;
+				path = graph.shortestPathWrapper();
 			}
 		});
     }

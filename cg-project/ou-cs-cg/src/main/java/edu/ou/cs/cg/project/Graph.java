@@ -2,6 +2,7 @@ package edu.ou.cs.cg.project;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -246,6 +247,87 @@ public class Graph {
         }
 
         // Return the connected edges
+        return connected;
+    }
+
+    public SearchNode shortestPath() {
+        ArrayList<SearchNode> searchNodes = new ArrayList<>();
+        for (Node n: nodes) {
+            SearchNode temp = new SearchNode(n);
+            temp.randomNum();
+            temp.depth = 0;
+            searchNodes.add(temp);
+        }
+        HashMap<SearchNode, Integer> dist = new HashMap<>();
+        ArrayList<SearchNode> q = new ArrayList<>();
+        for (SearchNode sn: searchNodes) {
+            if (sn.node.equals(getStart())) {
+                dist.put(sn, 0);
+            }
+            else {
+                dist.put(sn, Integer.MAX_VALUE);
+            }
+            q.add(sn);
+        }
+
+        while (!q.isEmpty()) {
+            int minDist = Integer.MAX_VALUE;
+            SearchNode minNode = null;
+            for (SearchNode sn: q) {
+                if (dist.get(sn) < minDist) {
+                    minDist = dist.get(sn);
+                    minNode = sn;
+                }
+            }
+            if (minNode.node.equals(getEnd())) {
+                return minNode;
+            }
+            q.remove(minNode);
+
+            for (SearchNode sn: getConnectedInList(minNode, q)) {
+                int temp = dist.get(minNode) + minNode.weight + sn.weight;
+                if (temp < dist.get(sn)) {
+                    dist.put(sn, temp);
+                    sn.parent = minNode;
+                    sn.depth = minNode.depth + 1;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<SearchNode> shortestPathWrapper() {
+        if (start == -1 || end == -1 || nodes.size() == 0) {
+            return null;
+        }
+        SearchNode temp = shortestPath();
+        ArrayList<SearchNode> path = new ArrayList<>();
+        while (temp != null) {
+            path.add(0, temp);
+            temp = temp.parent;
+        }
+        return path;
+    }
+
+    public List<SearchNode> getConnectedInList(SearchNode source, List<SearchNode> list) {
+        ArrayList<SearchNode> connected = new ArrayList<>();
+        for (Edge e: edges) {
+            if (e.getNode1().equals(source.node)) {
+                for (SearchNode sn: list) {
+                    if (sn.node.equals(e.getNode2())) {
+                        connected.add(sn);
+                    }
+                }
+            }
+            else if (e.getNode2().equals(source.node)) {
+                for (SearchNode sn: list) {
+                    if (sn.node.equals(e.getNode1())) {
+                        connected.add(sn);
+                    }
+                }
+            }
+        }
         return connected;
     }
 

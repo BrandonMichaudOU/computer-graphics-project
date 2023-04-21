@@ -238,10 +238,14 @@ public final class View
         
 		// Draw the graph without any animation
         drawEdges(gl);
-        drawNodes(gl);
 
 		// Draw the animation path
 		List<SearchNode> reached = drawPath(gl);
+
+		// Draw the nodes
+        drawNodes(gl);
+
+		// Draw the reached nodes
         if (reached != null) {
             drawReached(gl, reached);
         }
@@ -418,6 +422,11 @@ public final class View
 
 	// Draw shortest path
 	public List<SearchNode> drawShortestPath(GL2 gl, List<SearchNode> path) {
+		// int i = 0;
+		// for (SearchNode sn: path) {
+		// 	System.out.println("Path[" + i + "] = (" + sn.node.getX() + ", " + sn.node.getY() + ")");
+		// 	++i;
+		// }
 		ArrayList<SearchNode> reached = new ArrayList<>();
 		int numNodesToDraw = ((int) pathCounter / 121) + 1;
 		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;

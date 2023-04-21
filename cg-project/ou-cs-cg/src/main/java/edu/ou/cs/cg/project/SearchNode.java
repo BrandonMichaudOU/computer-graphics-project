@@ -15,7 +15,7 @@ public class SearchNode {
     public SearchNode(Node node) {
         this.parent = null;
         this.node = node;
-        this.weight=1;
+        this.weight = 1;
     }
 
     // Randomly generate a new weight
