@@ -3,10 +3,7 @@ package edu.ou.cs.cg.project;
 //import java.lang.*;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.util.*;
-
-import javax.swing.JComboBox;
 
 import com.jogamp.opengl.*;
 
@@ -342,6 +339,7 @@ public final class Model
 		});
     }
 
+	// Perform shortest path
 	public void shortestPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {

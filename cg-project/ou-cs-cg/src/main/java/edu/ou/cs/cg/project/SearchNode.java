@@ -1,6 +1,5 @@
 package edu.ou.cs.cg.project;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 // Represents an abstract object used for algorithms

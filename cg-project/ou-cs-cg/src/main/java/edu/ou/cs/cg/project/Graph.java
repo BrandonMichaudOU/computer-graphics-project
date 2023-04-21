@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
 
 // Represents a graph
 public class Graph {
@@ -250,7 +249,9 @@ public class Graph {
         return connected;
     }
 
+    // Find shortest path between start and end node
     public SearchNode shortestPath() {
+        // Create a search node for each node in the graph
         ArrayList<SearchNode> searchNodes = new ArrayList<>();
         for (Node n: nodes) {
             SearchNode temp = new SearchNode(n);
@@ -258,8 +259,14 @@ public class Graph {
             temp.depth = 0;
             searchNodes.add(temp);
         }
+
+        // Keep track of the minimum distance to each search node from start
         HashMap<SearchNode, Integer> dist = new HashMap<>();
+
+        // Priority queue for selecting smallest distance
         ArrayList<SearchNode> q = new ArrayList<>();
+
+        // Set the distance to infinity for each node except start (0) and add to priority queue
         for (SearchNode sn: searchNodes) {
             if (sn.node.equals(getStart())) {
                 dist.put(sn, 0);
@@ -270,7 +277,9 @@ public class Graph {
             q.add(sn);
         }
 
+        // Loop over priority queue until end node is selected or all nodes are exhausted
         while (!q.isEmpty()) {
+            // Find the minimum distance node left in the priority queue
             int minDist = Integer.MAX_VALUE;
             SearchNode minNode = null;
             for (SearchNode sn: q) {
@@ -279,13 +288,21 @@ public class Graph {
                     minNode = sn;
                 }
             }
+
+            // If the minimum distance node is the end, return it
             if (minNode.node.equals(getEnd())) {
                 return minNode;
             }
+
+            // Remove the minimum distance node from the priority queue
             q.remove(minNode);
 
+            // Loop over neighboring search nodes still in the queue
             for (SearchNode sn: getConnectedInList(minNode, q)) {
+                // Find the distance to neighboring search node through the minimum distance search node
                 int temp = dist.get(minNode) + minNode.weight + sn.weight;
+
+                // If the new distance is smaller than the existing distance, update it, the parent, and the depth
                 if (temp < dist.get(sn)) {
                     dist.put(sn, temp);
                     sn.parent = minNode;
@@ -294,40 +311,61 @@ public class Graph {
             }
         }
 
+        // Return null if the end node was not found
         return null;
     }
 
+    // Find shortest path between start and end node
     public List<SearchNode> shortestPathWrapper() {
+        // If the two nodes are not specified or there are no nodes, return null
         if (start == -1 || end == -1 || nodes.size() == 0) {
             return null;
         }
+
+        // Get the end search node from shortest path
         SearchNode temp = shortestPath();
+
+        // Build path by navigating to start from end
         ArrayList<SearchNode> path = new ArrayList<>();
         while (temp != null) {
             path.add(0, temp);
             temp = temp.parent;
         }
+
+        // Return shortest path
         return path;
     }
 
+    // Find the connected search nodes to a given source that are in a given list
     public List<SearchNode> getConnectedInList(SearchNode source, List<SearchNode> list) {
+        // Keep track of the connected search nodes in the list
         ArrayList<SearchNode> connected = new ArrayList<>();
+
+        // Loop over every edge to see if it contains the source search node
         for (Edge e: edges) {
+            // If the source search node is on front end, procede
             if (e.getNode1().equals(source.node)) {
+                // Check if the back end search node is in list. If so add it
                 for (SearchNode sn: list) {
                     if (sn.node.equals(e.getNode2())) {
                         connected.add(sn);
+                        break;
                     }
                 }
             }
+            // If the source search node is on back end, procede
             else if (e.getNode2().equals(source.node)) {
+                // Check if the front end search node is in list. If so add it
                 for (SearchNode sn: list) {
                     if (sn.node.equals(e.getNode1())) {
                         connected.add(sn);
+                        break;
                     }
                 }
             }
         }
+
+        // Return list of connected search nodes in list
         return connected;
     }
 
