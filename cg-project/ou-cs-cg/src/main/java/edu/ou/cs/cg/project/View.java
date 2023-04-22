@@ -62,8 +62,6 @@ public final class View
 	private float				defaultLine = 1.0f;		// normal thickness
 	private float				edgeLine = 2.5f;		// edge thickness
 
-	public double 				radius = 25;
-
 	private final Model				model;
 
 	private final KeyHandler			keyHandler;
@@ -119,6 +117,9 @@ public final class View
 		zoom = model.getZoom();
 		speed = model.getSpeed();
 		pause = model.getPause();
+
+		// Initialize the graph
+		model.defaultGraph();
 	}
 
 	//**********************************************************************
@@ -180,51 +181,11 @@ public final class View
 	{
 		k++;							// Advance animation counter
 
-		// Initialize the graph
-        if (!init) {
-            init = true;
-            buildGraphOne();
-        }
-
 		// Update the model animation variables
 		pan = model.getPan();
 		zoom = model.getZoom();
 		speed = model.getSpeed();
 		pause = model.getPause();
-	}
-
-	// Built in graph
-    private void buildGraphOne() {
-		// Add nodes to graph
-        ArrayList<Node> nodes = new ArrayList<>();
-		nodes.add(new Node(340, 680));
-		nodes.add(new Node(640, 680));
-		nodes.add(new Node(940, 680));
-		nodes.add(new Node(40, 360));
-		nodes.add(new Node(490, 360));
-		nodes.add(new Node(1240, 360));
-		nodes.add(new Node(340, 40));
-		nodes.add(new Node(640, 40));
-		nodes.add(new Node(940, 40));
-        model.addNodes(nodes);
-
-		// Add edges to graph
-        ArrayList<Edge> edges = new ArrayList<>();
-		edges.add(new Edge(nodes.get(0), nodes.get(1)));
-		edges.add(new Edge(nodes.get(0), nodes.get(3)));
-		edges.add(new Edge(nodes.get(0), nodes.get(6)));
-		edges.add(new Edge(nodes.get(1), nodes.get(2)));
-		edges.add(new Edge(nodes.get(1), nodes.get(4)));
-		edges.add(new Edge(nodes.get(1), nodes.get(8)));
-		edges.add(new Edge(nodes.get(2), nodes.get(5)));
-		edges.add(new Edge(nodes.get(2), nodes.get(8)));
-		edges.add(new Edge(nodes.get(3), nodes.get(6)));
-		edges.add(new Edge(nodes.get(4), nodes.get(6)));
-		edges.add(new Edge(nodes.get(4), nodes.get(7)));
-		edges.add(new Edge(nodes.get(5), nodes.get(8)));
-		edges.add(new Edge(nodes.get(6), nodes.get(7)));
-		edges.add(new Edge(nodes.get(7), nodes.get(8)));
-        model.addEdges(edges);
 	}
 
 	private void	render(GLAutoDrawable drawable)
@@ -320,8 +281,8 @@ public final class View
 
 			// Draw a circle for the node
             Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x + pan.x, p.y + pan.y, radius);
-            edgeCircle(gl, p.x + pan.x, p.y + pan.y, radius);
+            fillCircle(gl, p.x + pan.x, p.y + pan.y, n.getRadius());
+            edgeCircle(gl, p.x + pan.x, p.y + pan.y, n.getRadius());
         }
     }
 
@@ -364,7 +325,7 @@ public final class View
 		maxDepth = path.get(path.size() - 1).depth;
 		gl.glLineWidth(edgeLine);				// set the line width to the default
 		gl.glBegin(GL.GL_LINES);
-		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
+		for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
 			setColor(gl, 0, 255, 0);
 			if (j >= path.size()) {
 				break;
@@ -472,8 +433,8 @@ public final class View
 				setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
 
 				// Draw a circle for the reached node
-				fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
-				edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, radius);
+				fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
+				edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
 			}
 		}
     }

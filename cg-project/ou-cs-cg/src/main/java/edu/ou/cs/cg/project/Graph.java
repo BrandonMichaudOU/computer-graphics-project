@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 // Represents a graph
 public class Graph {
@@ -14,6 +15,15 @@ public class Graph {
     private ArrayList<Edge> edges;
     private int start = -1;
     private int end = -1;
+
+    // Random number generator
+    private Random rand = new Random();
+
+    // Constants for randoms
+    private final int MAX_WEIGHT = 10;
+    private final double RADIUS = 25;
+    private final int MAX_NODES = 10;
+    private final int MIN_NODES = 5;
 
     // Initialzize a graph
     public Graph() {
@@ -34,13 +44,13 @@ public class Graph {
     // Get the start node
     public Node getStart() {
         Node startNode = nodes.get(start);
-        return new Node(startNode.getX(), startNode.getY());
+        return new Node(startNode.getX(), startNode.getY(), startNode.getRadius());
     }
 
     // Get the end node
     public Node getEnd() {
         Node endNode = nodes.get(end);
-        return new Node(endNode.getX(), endNode.getY());
+        return new Node(endNode.getX(), endNode.getY(), endNode.getRadius());
     }
 
     // Add a node
@@ -377,5 +387,131 @@ public class Graph {
             }
         }
         return false;
+    }
+
+    // -------------------------------------- //
+    // ---------Auto-Generated Graphs-------- //
+    // -------------------------------------- //
+    public void defaultGraph() {
+        // Clear start and end
+        start = -1;
+        end = -1;
+
+        // Add nodes to graph
+        nodes.clear();
+		nodes.add(new Node(340, 680, RADIUS));
+		nodes.add(new Node(640, 680, RADIUS));
+		nodes.add(new Node(940, 680, RADIUS));
+		nodes.add(new Node(40, 360, RADIUS));
+		nodes.add(new Node(490, 360, RADIUS));
+		nodes.add(new Node(1240, 360, RADIUS));
+		nodes.add(new Node(340, 40, RADIUS));
+		nodes.add(new Node(640, 40, RADIUS));
+		nodes.add(new Node(940, 40, RADIUS));
+
+		// Add edges to graph
+        edges.clear();
+		edges.add(new Edge(nodes.get(0), nodes.get(1), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(0), nodes.get(3), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(0), nodes.get(6), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(1), nodes.get(2), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(1), nodes.get(4), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(1), nodes.get(8), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(2), nodes.get(5), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(2), nodes.get(8), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(3), nodes.get(6), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(4), nodes.get(6), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(4), nodes.get(7), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(5), nodes.get(8), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(6), nodes.get(7), rand.nextInt(MAX_WEIGHT) + 1));
+		edges.add(new Edge(nodes.get(7), nodes.get(8), rand.nextInt(MAX_WEIGHT) + 1));
+    }
+
+    private double distance(double x1, double y1, double x2, double y2) {
+		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+	}
+
+    public void randomGraph() {
+        // Clear start and end
+        start = -1;
+        end = -1;
+
+        nodes.clear();
+        edges.clear();
+        int numNodes = rand.nextInt(MAX_NODES - MIN_NODES + 1) + MIN_NODES;
+		for (int i = 0; i < numNodes; ++i) {
+			int x;
+			int y;
+			boolean trip;
+			do {
+				trip = false;
+				x = rand.nextInt((int)(1280 - 2 * RADIUS)) + (int)RADIUS;
+				y = rand.nextInt((int)(720 - 2 * RADIUS)) + (int)RADIUS;
+				for (Node n: nodes) {
+					if (distance(x, y, n.getX(), n.getY()) <= 3 * RADIUS) {
+						trip = true;
+						break;
+					}
+				}
+			} while (trip);
+			nodes.add(new Node(x, y, RADIUS));
+		}
+
+		int maxEdges = ((numNodes * (numNodes - 1)) / 2);
+		int minEdges = (((numNodes - 1) * (numNodes - 2)) / 2) + 1;
+		int numEdges = rand.nextInt(maxEdges - minEdges) + minEdges + 1;
+		for (int i = 0; i < numEdges; ++i) {
+			int node1;
+			int node2;
+			boolean trip;
+			do {
+				trip = false;
+				node1 = rand.nextInt(numNodes);
+				node2 = rand.nextInt(numNodes);
+				if (node1 == node2) {
+					trip = true;
+					continue;
+				}
+				double vx = nodes.get(node2).getX() - nodes.get(node1).getX();
+				double vy = nodes.get(node2).getY() - nodes.get(node1).getY();
+				for (int j = 0; j < numNodes; ++j) {
+					if (j == node1 || j == node2) {
+						continue;
+					}
+					double px, py;
+					if (vx == 0) {
+						px = nodes.get(node1).getX();
+						py = nodes.get(j).getY();
+					}
+					else if (vy == 0) {
+						px = nodes.get(j).getX();
+						py = nodes.get(node1).getY();
+					}
+					else {
+						double m = vy / vx;
+						double b = nodes.get(node1).getY() - m * nodes.get(node1).getX();
+
+						double mn = -(vx / vy);
+						double bn = nodes.get(j).getY() - mn * nodes.get(j).getX();
+
+						px = (bn - b) / (m - mn);
+						py = m * px + b;
+					}
+					if (nodes.get(node1).getX() < nodes.get(node2).getX() && nodes.get(node1).getX() <= px && px <= nodes.get(node2).getX()) {
+						if (distance(nodes.get(j).getX(), nodes.get(j).getY(), px, py) <= RADIUS) {
+							trip = true;
+							break;
+						}
+					}
+					else if (nodes.get(node2).getX() <= px && px <= nodes.get(node1).getX()) {
+						if (distance(nodes.get(j).getX(), nodes.get(j).getY(), px, py) <= RADIUS) {
+							trip = true;
+							break;
+						}
+					}
+				}
+			} while (trip);
+			edges.add(new Edge(nodes.get(node1), nodes.get(node2)));
+		}
     }
 }

@@ -7,13 +7,15 @@ public class Node {
     // Declare variables to hold position and state of node
     private double x;
     private double y;
+    private double r;
     private boolean start = false;
     private boolean end = false;
 
     // Create a node
-    public Node(double x, double y) {
+    public Node(double x, double y, double r) {
         this.x = x;
         this.y = y;
+        this.r = r;
     }
 
     // Get the center of node
@@ -29,6 +31,11 @@ public class Node {
     // Get the y-coordinate
     public double getY() {
         return y;
+    }
+
+    // Get the radius
+    public double getRadius() {
+        return r;
     }
 
     // Flip the start bit

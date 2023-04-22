@@ -150,6 +150,28 @@ public final class Model
 	// Public Methods (Modify Variables)
 	//**********************************************************************
 
+	// Load default graph
+	public void defaultGraph(){
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void update(GL2 gl){
+				if (path == null) {
+					graph.defaultGraph();
+				}
+			}
+		});
+	}
+
+	// Load random graph
+	public void randomGraph(){
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void update(GL2 gl){
+				if (path == null) {
+					graph.randomGraph();
+				}
+			}
+		});
+	}
+
 	// Change the algorithm
 	public void changeMode(String mode){
 		view.getCanvas().invoke(false, new BasicUpdater() {
@@ -234,7 +256,7 @@ public final class Model
 					double dist = distance(n.getPoint(), newP);
 
 					// If the click occurred inside the node, handle it
-					if (dist <= view.radius) {
+					if (dist <= n.getRadius()) {
 						// If shift is down, set the current node to the end
 						if (shift) {
 							setEnd(i);

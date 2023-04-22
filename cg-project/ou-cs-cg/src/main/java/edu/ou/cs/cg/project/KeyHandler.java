@@ -54,6 +54,16 @@ public final class KeyHandler extends KeyAdapter
 		// Handle input
 		switch (e.getKeyCode())
 		{
+			// Load default graph
+			case KeyEvent.VK_D:
+				model.defaultGraph();
+				break;
+
+			// Load random graph
+			case KeyEvent.VK_R:
+				model.randomGraph();
+				break;
+				
 			// Clear the path animation
 			case KeyEvent.VK_Q:
 				model.clearPath();
