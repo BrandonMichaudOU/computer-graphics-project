@@ -265,7 +265,6 @@ public class Graph {
         ArrayList<SearchNode> searchNodes = new ArrayList<>();
         for (Node n: nodes) {
             SearchNode temp = new SearchNode(n);
-            temp.randomNum();
             temp.depth = 0;
             searchNodes.add(temp);
         }
@@ -307,18 +306,73 @@ public class Graph {
             // Remove the minimum distance node from the priority queue
             q.remove(minNode);
 
-            // Loop over neighboring search nodes still in the queue
-            for (SearchNode sn: getConnectedInList(minNode, q)) {
-                // Find the distance to neighboring search node through the minimum distance search node
-                int temp = dist.get(minNode) + minNode.weight + sn.weight;
 
-                // If the new distance is smaller than the existing distance, update it, the parent, and the depth
-                if (temp < dist.get(sn)) {
-                    dist.put(sn, temp);
-                    sn.parent = minNode;
-                    sn.depth = minNode.depth + 1;
+
+
+
+
+            // Loop over every edge to see if it contains the source search node
+            for (Edge e: edges) {
+                // If the source search node is on front end, procede
+                if (e.getNode1().equals(minNode.node)) {
+                    // Check if the back end search node is in list. If so add it
+                    for (SearchNode sn: q) {
+                        if (sn.node.equals(e.getNode2())) {
+                            // Find the distance to neighboring search node through the minimum distance search node
+                            int temp = dist.get(minNode) + e.getWeight();
+
+                            // If the new distance is smaller than the existing distance, update it, the parent, and the depth
+                            if (temp < dist.get(sn)) {
+                                dist.put(sn, temp);
+                                sn.parent = minNode;
+                                sn.depth = minNode.depth + 1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                // If the source search node is on back end, procede
+                else if (e.getNode2().equals(minNode.node)) {
+                    // Check if the front end search node is in list. If so add it
+                    for (SearchNode sn: q) {
+                        if (sn.node.equals(e.getNode1())) {
+                            // Find the distance to neighboring search node through the minimum distance search node
+                            int temp = dist.get(minNode) + e.getWeight();
+
+                            // If the new distance is smaller than the existing distance, update it, the parent, and the depth
+                            if (temp < dist.get(sn)) {
+                                dist.put(sn, temp);
+                                sn.parent = minNode;
+                                sn.depth = minNode.depth + 1;
+                            }
+                            break;
+                        }
+                    }
                 }
             }
+
+
+
+
+
+
+
+
+
+
+
+            // Loop over neighboring search nodes still in the queue
+            // for (SearchNode sn: getConnectedInList(minNode, q)) {
+            //     // Find the distance to neighboring search node through the minimum distance search node
+            //     int temp = dist.get(minNode) + minNode.weight + sn.weight;
+
+            //     // If the new distance is smaller than the existing distance, update it, the parent, and the depth
+            //     if (temp < dist.get(sn)) {
+            //         dist.put(sn, temp);
+            //         sn.parent = minNode;
+            //         sn.depth = minNode.depth + 1;
+            //     }
+            // }
         }
 
         // Return null if the end node was not found
@@ -389,9 +443,10 @@ public class Graph {
         return false;
     }
 
-    // -------------------------------------- //
-    // ---------Auto-Generated Graphs-------- //
-    // -------------------------------------- //
+    //**********************************************************************
+	// Private Methods (Auto-Generated Graphs)
+	//**********************************************************************
+
     public void defaultGraph() {
         // Clear start and end
         start = -1;
@@ -511,7 +566,7 @@ public class Graph {
 					}
 				}
 			} while (trip);
-			edges.add(new Edge(nodes.get(node1), nodes.get(node2)));
+			edges.add(new Edge(nodes.get(node1), nodes.get(node2), rand.nextInt(MAX_WEIGHT) + 1));
 		}
     }
 }

@@ -8,18 +8,10 @@ public class SearchNode {
     public SearchNode parent;
     public Node node;
     public int depth;
-    public int weight;
 
     // Create a search node
     public SearchNode(Node node) {
         this.parent = null;
         this.node = node;
-        this.weight = 1;
-    }
-
-    // Randomly generate a new weight
-    public void randomNum(){
-        Random r = new Random();
-        weight= r.nextInt(5)+1;
     }
 }
