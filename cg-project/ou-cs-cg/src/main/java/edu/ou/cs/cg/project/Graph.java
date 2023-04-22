@@ -447,6 +447,7 @@ public class Graph {
 	// Private Methods (Auto-Generated Graphs)
 	//**********************************************************************
 
+    // Populate default graph
     public void defaultGraph() {
         // Clear start and end
         start = -1;
@@ -482,91 +483,186 @@ public class Graph {
 		edges.add(new Edge(nodes.get(7), nodes.get(8), rand.nextInt(MAX_WEIGHT) + 1));
     }
 
+    // Find distance between two points
     private double distance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
 
+    // Generate a random graph
     public void randomGraph() {
         // Clear start and end
         start = -1;
         end = -1;
 
+        // Clear previous graph
         nodes.clear();
         edges.clear();
+
+        // Generate a random number of nodes between bounds
         int numNodes = rand.nextInt(MAX_NODES - MIN_NODES + 1) + MIN_NODES;
 		for (int i = 0; i < numNodes; ++i) {
+            // Declare variables for node position
 			int x;
 			int y;
+
+            // Continue randomly generating positions until one does not overlap other ndoes
 			boolean trip;
 			do {
+                // Default to not overlapping
 				trip = false;
+
+                // Generate random position within screen
 				x = rand.nextInt((int)(1280 - 2 * RADIUS)) + (int)RADIUS;
 				y = rand.nextInt((int)(720 - 2 * RADIUS)) + (int)RADIUS;
+
+                // Test if the new position conflicts with previous nodes
 				for (Node n: nodes) {
-					if (distance(x, y, n.getX(), n.getY()) <= 3 * RADIUS) {
+                    // If the node is too close to another node, regenerate position
+					if (distance(x, y, n.getX(), n.getY()) <= 7 * RADIUS) {
 						trip = true;
 						break;
 					}
 				}
 			} while (trip);
+
+            // Add the new node
 			nodes.add(new Node(x, y, RADIUS));
 		}
 
-		int maxEdges = ((numNodes * (numNodes - 1)) / 2);
-		int minEdges = (((numNodes - 1) * (numNodes - 2)) / 2) + 1;
-		int numEdges = rand.nextInt(maxEdges - minEdges) + minEdges + 1;
-		for (int i = 0; i < numEdges; ++i) {
+        // Define the maximum number of edges in a graph
+        //int maxEdges = (((numNodes - 1) * (numNodes - 2)) / 2) + 1;
+        int maxEdges = Math.min((((numNodes - 1) * (numNodes - 2)) / 2) + 1, numNodes * 2);
+
+        // Define minimum number of edges to guarentee connected graph
+        int minEdges = numNodes - 1;
+
+        // Randomly generate minimum number of edges
+		int numEdges = rand.nextInt(maxEdges - minEdges) + minEdges;
+
+        // Define connected matrix for nodes and initialize every cell with false
+        boolean[][] matrix = new boolean[numNodes][numNodes];
+        for (int i = 0; i < numNodes; ++i) {
+            for (int j = 0; j < numNodes; ++j) {
+                matrix[i][j] = false;
+            }
+        }
+
+        // Find list of all nodes connected to first node
+        start = 0;
+        List<SearchNode> testConnected = DFS();
+
+        // Continue making edges until graph is connected or generated minimum number has not been met
+        int k = 0;
+		while (testConnected == null || testConnected.size() != numNodes || k < numEdges) {
+            k++;
+            // Declare variables for edge end points
 			int node1;
 			int node2;
+
+            // Continue randomly generating node pairs until the edge:
+            // 1. Is not a loop
+            // 2. Is not a repeat
+            // 3. Does not intersect a non-endpoint node
+            int ctr = 0;
+            boolean infinite = false;
 			boolean trip;
 			do {
+                // Assume the edge is valid
 				trip = false;
+
+                // Generate random endpoints
 				node1 = rand.nextInt(numNodes);
 				node2 = rand.nextInt(numNodes);
+
+                if (ctr > 1000) {
+                    System.out.println("Infinite loop");
+                    infinite = true;
+                    break;
+                }
+
+                // If the endpoints are the same, regenerate new endpoints
 				if (node1 == node2) {
 					trip = true;
 					continue;
 				}
+                // If the edge already exists, regenerate new endpoints
+                else if (matrix[node1][node2]) {
+                    trip = true;
+                    continue;
+                }
+
+                // Find vector between nodes
 				double vx = nodes.get(node2).getX() - nodes.get(node1).getX();
 				double vy = nodes.get(node2).getY() - nodes.get(node1).getY();
+
+                // Check to see if edge intersects each non-endpoint node
 				for (int j = 0; j < numNodes; ++j) {
+                    // If the current node is either endpoint, continue
 					if (j == node1 || j == node2) {
 						continue;
 					}
+
+                    // Declare variables for node projected onto edge
 					double px, py;
+
+                    // If the edge is vertical, specially define projection
 					if (vx == 0) {
 						px = nodes.get(node1).getX();
 						py = nodes.get(j).getY();
 					}
+                    // If the edge is horizontal, specially define projection
 					else if (vy == 0) {
 						px = nodes.get(j).getX();
 						py = nodes.get(node1).getY();
 					}
+                    // If the edge is not special, find projection using line intersection
 					else {
+                        // Find slope and y-intercept of edge
 						double m = vy / vx;
 						double b = nodes.get(node1).getY() - m * nodes.get(node1).getX();
 
+                        // Find slope and y-intercept of perpendicular line to edge through node
 						double mn = -(vx / vy);
 						double bn = nodes.get(j).getY() - mn * nodes.get(j).getX();
 
+                        // Find intersection of edge and perpendicular line to get projection of node onto edge
 						px = (bn - b) / (m - mn);
 						py = m * px + b;
 					}
+
+                    // If the projected x value is within edge, check the closest distance to edge
 					if (nodes.get(node1).getX() < nodes.get(node2).getX() && nodes.get(node1).getX() <= px && px <= nodes.get(node2).getX()) {
+                        // If the minimum distance from the node to the edge is less than the
+                        // radius regenerate a new edge
 						if (distance(nodes.get(j).getX(), nodes.get(j).getY(), px, py) <= RADIUS) {
 							trip = true;
 							break;
 						}
 					}
 					else if (nodes.get(node2).getX() <= px && px <= nodes.get(node1).getX()) {
+                        // If the minimum distance from the node to the edge is less than the
+                        // radius regenerate a new edge
 						if (distance(nodes.get(j).getX(), nodes.get(j).getY(), px, py) <= RADIUS) {
 							trip = true;
 							break;
 						}
 					}
 				}
+                ++ctr;
 			} while (trip);
-			edges.add(new Edge(nodes.get(node1), nodes.get(node2), rand.nextInt(MAX_WEIGHT) + 1));
+
+            // Add the edge
+            if (!infinite) {
+                matrix[node1][node2] = true;
+                matrix[node2][node1] = true;
+                edges.add(new Edge(nodes.get(node1), nodes.get(node2), rand.nextInt(MAX_WEIGHT) + 1));
+            }
+
+            // Test the graph to see if it is connected
+            testConnected = DFS();
 		}
+
+        // Clear start node from connectivity tests
+        start = -1;
     }
 }
