@@ -69,6 +69,11 @@ public final class KeyHandler extends KeyAdapter
 				model.clearPath();
 				view.pathCounter = 120;
 				break;
+
+			// Reset Transformation
+			case KeyEvent.VK_C:
+				model.resetTransform();
+				break;
 			
 			// Update the animation speed
 			case KeyEvent.VK_A:

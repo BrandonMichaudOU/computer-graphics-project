@@ -199,7 +199,6 @@ public final class View
         
 		// Draw the graph without any animation
         drawEdges(gl);
-		drawWeights(gl);
 
 		// Draw the animation path
 		List<SearchNode> reached = drawPath(gl);
@@ -264,10 +263,7 @@ public final class View
     }
 
 	private void drawWeights(GL2 gl) {
-		renderer.beginRendering(w, h);
-
-		// Draw all text in black
-		renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+		
 
 		for (Edge e: model.getEdges()) {
 			// Get the vector of the edge
@@ -292,12 +288,13 @@ public final class View
 			x += panx;
 			y += pany;
 
-			double[] projection = model.getProjection();
-			double width = projection[1] - projection[0];
-			double height = projection[3] - projection[2];
-			renderer.draw("" + e.getWeight(), (int)(((x - projection[0])/ width) * w), (int)(((y - projection[2])/ height) * h));
+			double[] newPoints = Utilities.mapSceneToView(gl, x, y, 0.0);
+
+			renderer.beginRendering(w, h);
+			renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+			renderer.draw("" + e.getWeight(), (int)newPoints[0], (int)newPoints[1]);
+			renderer.endRendering();
 		}
-		renderer.endRendering();
 	}
 
 	// Draw the nodes
