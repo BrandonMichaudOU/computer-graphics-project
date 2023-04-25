@@ -18,7 +18,6 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
-import javafx.scene.chart.XYChart;
 
 //******************************************************************************
 
@@ -200,6 +199,7 @@ public final class View
         
 		// Draw the graph without any animation
         drawEdges(gl);
+		drawWeights(gl);
 
 		// Draw the animation path
 		List<SearchNode> reached = drawPath(gl);
@@ -286,7 +286,16 @@ public final class View
 			double x = mx + px;
 			double y = my + py;
 
-			renderer.draw("" + e.getWeight(), (int)((x / 1280) * w), (int)((y / 720) * h));
+			Point2D.Double pan = model.getPan();
+			double panx = pan.getX();
+			double pany = pan.getY();
+			x += panx;
+			y += pany;
+
+			double[] projection = model.getProjection();
+			double width = projection[1] - projection[0];
+			double height = projection[3] - projection[2];
+			renderer.draw("" + e.getWeight(), (int)(((x - projection[0])/ width) * w), (int)(((y - projection[2])/ height) * h));
 		}
 		renderer.endRendering();
 	}
