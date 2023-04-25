@@ -84,8 +84,6 @@ public final class View
 
 	private int 				maxDepth;
 
-	int temp = 0;
-
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -201,7 +199,6 @@ public final class View
         
 		// Draw the graph without any animation
         drawEdges(gl);
-		drawWeights(gl);
 
 		// Draw the animation path
 		List<SearchNode> reached = drawPath(gl);
@@ -287,14 +284,6 @@ public final class View
 
 			double x = mx + px;
 			double y = my + py;
-
-			if (temp < model.getEdges().size()) {
-				System.out.println("Edge (" + e.getNode1().getX() + ", " + e.getNode1().getY() + ") to (" 
-					+ e.getNode2().getX() + ", " + e.getNode2().getY() + ")");
-				System.out.println("Mid point = (" + mx + ", " + my + ")");
-				System.out.println("Weight point = (" + x + ", " + y + ")\n");
-				++temp;
-			}
 
 			renderer.draw("" + e.getWeight(), (int)((x / 1280) * w), (int)((y / 720) * h));
 		}
@@ -427,6 +416,7 @@ public final class View
 		// 	System.out.println("Path[" + i + "] = (" + sn.node.getX() + ", " + sn.node.getY() + ")");
 		// 	++i;
 		// }
+		drawWeights(gl);
 		ArrayList<SearchNode> reached = new ArrayList<>();
 		int numNodesToDraw = ((int) pathCounter / 121) + 1;
 		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
