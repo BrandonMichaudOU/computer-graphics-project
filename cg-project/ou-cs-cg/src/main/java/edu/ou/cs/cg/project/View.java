@@ -18,6 +18,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
+import javafx.scene.chart.XYChart;
 
 //******************************************************************************
 

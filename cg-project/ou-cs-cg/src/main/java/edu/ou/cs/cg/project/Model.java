@@ -253,7 +253,8 @@ public final class Model
 				for (Node n: graph.getNodes()) {
 					// Find the distance between mouse click and current node
 					Point2D.Double newP = new Point2D.Double(p[0], p[1]);
-					double dist = distance(n.getPoint(), newP);
+					Point2D.Double node_new = new Point2D.Double(n.getX() + pan.x, n.getY() + pan.y);
+					double dist = distance(node_new, newP);
 
 					// If the click occurred inside the node, handle it
 					if (dist <= n.getRadius()) {
