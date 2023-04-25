@@ -84,6 +84,8 @@ public final class View
 
 	private int 				maxDepth;
 
+	int temp = 0;
+
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -199,6 +201,7 @@ public final class View
         
 		// Draw the graph without any animation
         drawEdges(gl);
+		drawWeights(gl);
 
 		// Draw the animation path
 		List<SearchNode> reached = drawPath(gl);
@@ -261,6 +264,42 @@ public final class View
 		// Reset the line width
         gl.glLineWidth(defaultLine);
     }
+
+	private void drawWeights(GL2 gl) {
+		renderer.beginRendering(w, h);
+
+		// Draw all text in black
+		renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+
+		for (Edge e: model.getEdges()) {
+			// Get the vector of the edge
+			double vx = e.getNode2().getX() - e.getNode1().getX();
+			double vy = e.getNode2().getY() - e.getNode1().getY();
+			double vs = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
+
+			// Get the midpoint of the edge
+			double mx = (e.getNode2().getX() + e.getNode1().getX()) / 2.0;
+			double my = (e.getNode2().getY() + e.getNode1().getY()) / 2.0;
+
+			double offset = 15;
+			double px = (-vy / vs) * offset;
+			double py = (vx / vs) * offset;
+
+			double x = mx + px;
+			double y = my + py;
+
+			if (temp < model.getEdges().size()) {
+				System.out.println("Edge (" + e.getNode1().getX() + ", " + e.getNode1().getY() + ") to (" 
+					+ e.getNode2().getX() + ", " + e.getNode2().getY() + ")");
+				System.out.println("Mid point = (" + mx + ", " + my + ")");
+				System.out.println("Weight point = (" + x + ", " + y + ")\n");
+				++temp;
+			}
+
+			renderer.draw("" + e.getWeight(), (int)((x / 1280) * w), (int)((y / 720) * h));
+		}
+		renderer.endRendering();
+	}
 
 	// Draw the nodes
     private void drawNodes(GL2 gl) {
