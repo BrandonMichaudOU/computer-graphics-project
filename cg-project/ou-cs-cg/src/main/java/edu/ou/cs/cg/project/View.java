@@ -276,10 +276,7 @@ public final class View
     }
 
 	private void drawWeights(GL2 gl) {
-		renderer.beginRendering(w, h);
-
-		// Draw all text in black
-		renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+		
 
 		for (Edge e: model.getEdges()) {
 			// Get the vector of the edge
@@ -298,10 +295,19 @@ public final class View
 			double x = mx + px;
 			double y = my + py;
 
-			renderer.draw("" + e.getWeight(), (int)((x / 1280) * w), (int)((y / 720) * h));
-			
+			Point2D.Double pan = model.getPan();
+			double panx = pan.getX();
+			double pany = pan.getY();
+			x += panx;
+			y += pany;
+
+			double[] newPoints = Utilities.mapSceneToView(gl, x, y, 0.0);
+
+			renderer.beginRendering(w, h);
+			renderer.setColor(0.f, 0.f, 0.f, 1.0f);
+			renderer.draw("" + e.getWeight(), (int)newPoints[0], (int)newPoints[1]);
+			renderer.endRendering();
 		}
-		renderer.endRendering();
 	}
 
 	// Draw the nodes

@@ -384,6 +384,21 @@ public final class Model
 		});
     }
 
+	// Reset the transformations
+	public void resetTransform() {
+		view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				xmin = 0;
+				xmax = 1280;
+				ymin = 0;
+				ymax = 720;
+				pan.x = 0;
+				pan.y = 0;
+				zoom = 1;
+			}
+		});
+	}
+
 	// Set the cursor point
 	public void	setCursorInViewCoordinates(Point q)
 	{
