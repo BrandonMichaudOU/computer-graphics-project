@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 
 import com.jogamp.opengl.*;
@@ -18,7 +19,6 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
-import javafx.scene.chart.XYChart;
 
 //******************************************************************************
 
@@ -89,7 +89,7 @@ public final class View
 	// Constructors and Finalizer
 	//**********************************************************************
 
-	public View(GLJPanel canvas, JComboBox<String> cb)
+	public View(GLJPanel canvas, JComboBox<String> cb, JButton start, JButton random)
 	{
 		this.canvas = canvas;
 
@@ -104,6 +104,18 @@ public final class View
 				model.changeMode(cb.getSelectedItem().toString());
 			}
 		}); 
+
+		start.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				model.start();
+			}
+		});
+
+		random.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				model.randomGraph();
+			}
+		});
 
 		// Initialize controller (interaction handlers)
 		keyHandler = new KeyHandler(this, model);
@@ -287,6 +299,7 @@ public final class View
 			double y = my + py;
 
 			renderer.draw("" + e.getWeight(), (int)((x / 1280) * w), (int)((y / 720) * h));
+			
 		}
 		renderer.endRendering();
 	}

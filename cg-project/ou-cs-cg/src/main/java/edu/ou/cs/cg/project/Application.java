@@ -5,10 +5,13 @@ import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.*;
+
+import java.awt.Button;
 import java.awt.Component;
 
 //******************************************************************************
@@ -26,7 +29,7 @@ public final class Application
 	// Public Class Members
 	//**********************************************************************
 
-	public static final String		DEFAULT_NAME = "Homework03";
+	public static final String		DEFAULT_NAME = "Team Project 7";
 	public static final Dimension	DEFAULT_SIZE = new Dimension(500, 500);
 
 	//**********************************************************************
@@ -88,12 +91,20 @@ public final class Application
 		JLabel label = new JLabel("Select the Graph Algorithm to run.");
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(label);
-		
+		JPanel panel2 = new JPanel();
 		String[] choices = {"", "Breadth-First-Search", "Depth-First-Search", "Shortest-Path"};
 		final JComboBox<String> cb = new JComboBox<String>(choices);
 		cb.setMaximumSize(cb.getPreferredSize());
 		cb.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel.add(cb);
+		JButton start= new JButton("Start the Visualizer");
+		JButton random= new JButton("Randomize the Graph");
+		start.setAlignmentX(Component.LEFT_ALIGNMENT);
+		random.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		panel2.add(start);
+		//panel2.add(label);
+		panel2.add(cb);
+		panel2.add(random);
+		panel.add(panel2);
 		panel.add(canvas);
 		frame.pack();
 		frame.setVisible(true);
@@ -115,7 +126,7 @@ public final class Application
 		
 
 		// Create a view to manage the canvas
-		view = new View(canvas, cb);
+		view = new View(canvas, cb, start, random);
 	}
 }
 
