@@ -8,10 +8,12 @@ public class SearchNode {
     public SearchNode parent;
     public Node node;
     public int depth;
+    public boolean isLeaf;
 
     // Create a search node
     public SearchNode(Node node) {
         this.parent = null;
         this.node = node;
+        this.isLeaf = true;
     }
 }

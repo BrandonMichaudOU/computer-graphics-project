@@ -82,9 +82,6 @@ public final class View
 	private double				speed;
 	private int					pause;
 
-
-	private int 				maxDepth;
-
 	//**********************************************************************
 	// Constructors and Finalizer
 	//**********************************************************************
@@ -367,18 +364,28 @@ public final class View
 
 	// Draw BFS
 	public List<SearchNode> drawBFS(GL2 gl, List<SearchNode> path) {
+		// Declare array of reached nodes
 		ArrayList<SearchNode> reached = new ArrayList<>();
+
+		// Find number of nodes to draw
 		int numNodesToDraw = ((int) pathCounter / 121) + 1;
 		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-		maxDepth = path.get(path.size() - 1).depth;
+
+		// Declare variables for cyan to purple gradient
+		int maxDepth = path.get(path.size() - 1).depth - 1;
+		int rgbIncrement = 255 / maxDepth;
+		int[] nodeColor = {0, 255, 255};
+		
 		gl.glLineWidth(edgeLine);				// set the line width to the default
 		gl.glBegin(GL.GL_LINES);
 		for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
-			setColor(gl, 0, 255, 0);
 			if (j >= path.size()) {
 				break;
 			}
 			else if (i == numNodesToDraw - 1) {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).parent.isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
@@ -386,6 +393,9 @@ public final class View
 					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
 			}
 			else {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).parent.isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
 				reached.add(path.get(i));
@@ -399,18 +409,28 @@ public final class View
 
 	// Draw DFS
 	public List<SearchNode> drawDFS(GL2 gl, List<SearchNode> path) {
+		// Declare array of reached nodes
 		ArrayList<SearchNode> reached = new ArrayList<>();
+
+		// Find number of nodes to draw
 		int numNodesToDraw = ((int) pathCounter / 121) + 1;
 		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-		maxDepth = path.get(path.size() - 1).depth;
+
+		// Declare variables for cyan to purple gradient
+		int maxDepth = path.get(path.size() - 1).depth - 1;
+		int rgbIncrement = 255 / maxDepth;
+		int[] nodeColor = {0, 255, 255};
+		
 		gl.glLineWidth(edgeLine);				// set the line width to the default
 		gl.glBegin(GL.GL_LINES);
-		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
-			setColor(gl, 0, 255, 0);
+		for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
 			if (j >= path.size()) {
 				break;
 			}
 			else if (i == numNodesToDraw - 1) {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).parent.isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
@@ -418,6 +438,9 @@ public final class View
 					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
 			}
 			else {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).parent.isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
 				reached.add(path.get(i));
@@ -437,18 +460,28 @@ public final class View
 		// 	++i;
 		// }
 		drawWeights(gl);
+		// Declare array of reached nodes
 		ArrayList<SearchNode> reached = new ArrayList<>();
+
+		// Find number of nodes to draw
 		int numNodesToDraw = ((int) pathCounter / 121) + 1;
 		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-		maxDepth = path.get(path.size() - 1).depth;
+
+		// Declare variables for cyan to purple gradient
+		int maxDepth = path.get(path.size() - 1).depth - 1;
+		int rgbIncrement = 255 / maxDepth;
+		int[] nodeColor = {0, 255, 255};
+		
 		gl.glLineWidth(edgeLine);				// set the line width to the default
 		gl.glBegin(GL.GL_LINES);
-		for (int i = 1, j =1; i < numNodesToDraw; ++i, ++j) {
-			setColor(gl, 0, 255, 0);
+		for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
 			if (j >= path.size()) {
 				break;
 			}
 			else if (i == numNodesToDraw - 1) {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
@@ -456,6 +489,9 @@ public final class View
 					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
 			}
 			else {
+				int depth = path.get(i).depth;
+				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+				path.get(i).isLeaf = false;
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
 				reached.add(path.get(i));
@@ -469,22 +505,44 @@ public final class View
 
 	// Draw a list of reached nodes
     private void drawReached(GL2 gl, List<SearchNode> reached) {
-		// Draw the reached nodes, if any
-		if (reached.size() > 0) {
-			// Declare variables for cyan to purple gradient
-			int rgbIncrement = 255 / maxDepth;
-			int[] nodeColor = {0, 255, 255};
+		// // Draw the reached nodes, if any
+		// if (reached.size() > 0) {
+		// 	// Declare variables for cyan to purple gradient
+		// 	int rgbIncrement = 255 / maxDepth;
+		// 	int[] nodeColor = {0, 255, 255};
 
-			// Draw each node
-        	for (SearchNode n: reached) {
-				// Set the color based on the depth
-				int depth = n.depth;
-				setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
+		// 	// Draw each node
+        // 	for (SearchNode n: reached) {
+		// 		// Set the color based on the depth
+		// 		int depth = n.depth;
+		// 		setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
 
-				// Draw a circle for the reached node
-				fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
-				edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
+		// 		// Draw a circle for the reached node
+		// 		fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
+		// 		edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
+		// 	}
+		// }
+
+		// int maxDepth = 0;
+		// if (reached.size() > 0) {
+		// 	maxDepth = reached.get(reached.size() - 1).depth;
+		// }
+		// Draw each node
+
+		for (SearchNode n: reached) {
+			// if (n.depth == maxDepth) {
+			// 	setColor(gl, 255, 255, 0);
+			// }
+			if (n.isLeaf) {
+				setColor(gl, 255, 255, 0);
 			}
+			else {
+				setColor(gl, 0, 255, 0);
+			}
+
+			// Draw a circle for the reached node
+			fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
+			edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
 		}
     }
 

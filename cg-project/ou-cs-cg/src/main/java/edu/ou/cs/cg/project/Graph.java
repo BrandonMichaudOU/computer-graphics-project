@@ -306,11 +306,6 @@ public class Graph {
             // Remove the minimum distance node from the priority queue
             q.remove(minNode);
 
-
-
-
-
-
             // Loop over every edge to see if it contains the source search node
             for (Edge e: edges) {
                 // If the source search node is on front end, procede
@@ -350,29 +345,6 @@ public class Graph {
                     }
                 }
             }
-
-
-
-
-
-
-
-
-
-
-
-            // Loop over neighboring search nodes still in the queue
-            // for (SearchNode sn: getConnectedInList(minNode, q)) {
-            //     // Find the distance to neighboring search node through the minimum distance search node
-            //     int temp = dist.get(minNode) + minNode.weight + sn.weight;
-
-            //     // If the new distance is smaller than the existing distance, update it, the parent, and the depth
-            //     if (temp < dist.get(sn)) {
-            //         dist.put(sn, temp);
-            //         sn.parent = minNode;
-            //         sn.depth = minNode.depth + 1;
-            //     }
-            // }
         }
 
         // Return null if the end node was not found
