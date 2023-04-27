@@ -107,7 +107,7 @@ public class Graph {
             start = -1;
         }
         // If the new index is already the end, remove it
-        if (end == idx) {
+        if (idx != -1 && end == idx) {
             nodes.get(end).toggleEnd();
             end = -1;
             return;
