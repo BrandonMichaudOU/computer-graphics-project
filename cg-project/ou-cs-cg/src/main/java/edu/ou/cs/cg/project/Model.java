@@ -91,6 +91,11 @@ public final class Model
 		return graph.getEdges();
 	}
 
+	public Graph		getGraph()
+	{
+		return graph;
+	}
+
 	// Get the path
 	public List<SearchNode>   getPath()
     {
@@ -347,7 +352,7 @@ public final class Model
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
 				pathType[0] = true;
-				path = graph.BFS();
+				path = new ArrayList<>();
 			}
 		});
     }

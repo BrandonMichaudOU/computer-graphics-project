@@ -11,10 +11,10 @@ import java.util.Random;
 // Represents a graph
 public class Graph {
     // Declare variables to hold state of graph
-    private ArrayList<Node> nodes;
-    private ArrayList<Edge> edges;
-    private int start = -1;
-    private int end = -1;
+    public ArrayList<Node> nodes;
+    public ArrayList<Edge> edges;
+    public int start = -1;
+    public int end = -1;
 
     // Random number generator
     private Random rand = new Random();

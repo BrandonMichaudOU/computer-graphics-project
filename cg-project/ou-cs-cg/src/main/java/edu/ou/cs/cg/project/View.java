@@ -19,7 +19,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
-// This is a test
+
 //******************************************************************************
 
 /**
@@ -75,7 +75,7 @@ public final class View
 	private float				defaultline = 1.0f;		// normal thickness
 	private float				thickline = 2.5f;		// bold thickness
 
-    public double                 pathCounter = 120;
+    public double                 pathCounter = 0;
 
 	private Point2D.Double 		pan;
 	private double				zoom;
@@ -210,11 +210,11 @@ public final class View
 		// Draw the graph without any animation
         drawEdges(gl);
 
-		// Draw the animation path
-		List<SearchNode> reached = drawPath(gl);
-
 		// Draw the nodes
         drawNodes(gl);
+
+		// Draw the animation path
+		List<SearchNode> reached = drawPath(gl);
 
 		// Draw the reached nodes
         if (reached != null) {
@@ -346,7 +346,7 @@ public final class View
 
 			// If the path is BFS, draw it
 			if (pathType[0]) {
-				reached = drawBFS(gl, path);
+				drawBFS(gl, path);
 			}
 			// If the path is DFS, draw it
 			else if (pathType[1]) {
@@ -362,49 +362,175 @@ public final class View
 		return reached;
 	}
 
-	// Draw BFS
-	public List<SearchNode> drawBFS(GL2 gl, List<SearchNode> path) {
-		// Declare array of reached nodes
-		ArrayList<SearchNode> reached = new ArrayList<>();
-
-		// Find number of nodes to draw
-		int numNodesToDraw = ((int) pathCounter / 121) + 1;
-		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-
-		// Declare variables for cyan to purple gradient
-		int maxDepth = path.get(path.size() - 1).depth - 1;
-		int rgbIncrement = 255 / maxDepth;
-		int[] nodeColor = {0, 255, 255};
-		
-		gl.glLineWidth(edgeLine);				// set the line width to the default
-		gl.glBegin(GL.GL_LINES);
-		for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
-			if (j >= path.size()) {
-				break;
-			}
-			else if (i == numNodesToDraw - 1) {
-				int depth = path.get(i).depth;
-				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-				path.get(i).parent.isLeaf = false;
-				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
-				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
-				gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
-					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
-			}
-			else {
-				int depth = path.get(i).depth;
-				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-				path.get(i).parent.isLeaf = false;
-				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
-				reached.add(path.get(i));
+	public boolean contains(List<Node> list, Node node) {
+		for (Node n: list) {
+			if (n.equals(node)) {
+				return true;
 			}
 		}
-		gl.glEnd();
+		return false;
+	}
+	// Draw BFS
+	public void drawBFS(GL2 gl, List<SearchNode> path) {
+
+		Graph graph = model.getGraph();
+
+		// If the start is not specified or there are no nodes, return null
+        if (graph.start == -1 || graph.nodes.size() == 0) {
+            return;
+        }
+
+        // Create a search node for the start and add it to the path
+        Node root = graph.getStart();
+
+        // Create lists to hold seen nodes and the queue of search nodes. Add root to both
+        ArrayList<Node> seen = new ArrayList<>();
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        seen.add(root);
+
+		int numEdgesToDraw = ((int) pathCounter / 121) + 1;
+		double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+		int numDrawn = 0;
+
+		gl.glLineWidth(edgeLine);
+		Node previous = null;
+		boolean broke = false;
+        // Loop over the queue until it is empty
+        while (numDrawn < numEdgesToDraw && !q.isEmpty()) {
+            // Get the front of the queue
+            Node n = q.poll();
+			setColor(gl, 0, 255, 255);
+			fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+
+            // Loop over each edge to find if it is adjacent to current node
+            for (Edge e: graph.edges){
+                // If the first side of the edge is the current node, procede
+                if (n.equals(e.getNode1())) {
+                    // Create a search node for the connected node and add to queue, seen, and path if it is unseen
+                    Node n2 = e.getNode2();
+					if (numDrawn == numEdgesToDraw - 1) {
+						setColor(gl, 255, 255, 0);
+						gl.glBegin(GL.GL_LINES);
+						gl.glVertex2d(n.getX() + pan.x, n.getY() + pan.y);
+						double xVector = n2.getX() - n.getX();
+						double yVector = n2.getY() - n.getY();
+						gl.glVertex2d(n.getX() + xVector * proportionOfFinalEdge + pan.x, 
+							n.getY() + yVector * proportionOfFinalEdge + pan.y);
+						gl.glEnd();
+					}
+					else {
+						if (!contains(seen, n2)) {
+							setColor(gl, 0, 255, 0);
+							gl.glBegin(GL.GL_LINES);
+							gl.glVertex2d(n.getX() + pan.x, n.getY() + pan.y);
+							gl.glVertex2d(n2.getX() + pan.x, n2.getY() + pan.y);
+							gl.glEnd();
+							setColor(gl, 255, 0, 255);
+							fillCircle(gl, n2.getX(), n2.getY(), n2.getRadius());
+							q.add(n2);
+							seen.add(n2);
+						}
+					}
+					++numDrawn;
+					if (numDrawn >= numEdgesToDraw) {
+						broke = true;
+						break;
+					}
+                }
+                // If the second side of the edge is the current node, procede
+                else if (n.equals(e.getNode2())) {
+                    // Create a search node for the connected node and add to queue, seen, and path if it is unseen
+                    Node n1 = e.getNode1();
+                    if (numDrawn == numEdgesToDraw - 1) {
+						setColor(gl, 255, 255, 0);
+						gl.glBegin(GL.GL_LINES);
+						gl.glVertex2d(n.getX() + pan.x, n.getY() + pan.y);
+						double xVector = n1.getX() - n.getX();
+						double yVector = n1.getY() - n.getY();
+						gl.glVertex2d(n.getX() + xVector * proportionOfFinalEdge + pan.x, 
+							n.getY() + yVector * proportionOfFinalEdge + pan.y);
+						gl.glEnd();
+					}
+					else {
+						if (!contains(seen, n1)) {
+							setColor(gl, 0, 255, 0);
+							gl.glBegin(GL.GL_LINES);
+							gl.glVertex2d(n.getX() + pan.x, n.getY() + pan.y);
+							gl.glVertex2d(n1.getX() + pan.x, n1.getY() + pan.y);
+							gl.glEnd();
+							setColor(gl, 255, 0, 255);
+							fillCircle(gl, n1.getX(), n1.getY(), n1.getRadius());
+							q.add(n1);
+							seen.add(n1);
+						}
+					}
+					++numDrawn;
+					if (numDrawn >= numEdgesToDraw) {
+						broke = true;
+						break;
+					}
+                }
+            }
+			previous = n;
+        }
+		if (previous != null && broke) {
+			setColor(gl, 0, 0, 0);
+			fillCircle(gl, previous.getX(), previous.getY(), previous.getRadius());
+		}
 		gl.glLineWidth(defaultLine);
 		pathCounter += pause * speed;
-		return reached;
+
+
+
+
+
+
+
+
+
+
+		// // Declare array of reached nodes
+		// ArrayList<SearchNode> reached = new ArrayList<>();
+
+		// // Find number of nodes to draw
+		// int numNodesToDraw = ((int) pathCounter / 121) + 1;
+		// double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
+
+		// // Declare variables for cyan to purple gradient
+		// int maxDepth = path.get(path.size() - 1).depth - 1;
+		// int rgbIncrement = 255 / maxDepth;
+		// int[] nodeColor = {0, 255, 255};
+		
+		// gl.glLineWidth(edgeLine);				// set the line width to the default
+		// gl.glBegin(GL.GL_LINES);
+		// for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
+		// 	if (j >= path.size()) {
+		// 		break;
+		// 	}
+		// 	else if (i == numNodesToDraw - 1) {
+		// 		int depth = path.get(i).depth;
+		// 		setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+		// 		path.get(i).parent.isLeaf = false;
+		// 		gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+		// 		double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
+		// 		double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
+		// 		gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
+		// 			path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
+		// 	}
+		// 	else {
+		// 		int depth = path.get(i).depth;
+		// 		setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
+		// 		path.get(i).parent.isLeaf = false;
+		// 		gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
+		// 		gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
+		// 		reached.add(path.get(i));
+		// 	}
+		// }
+		// gl.glEnd();
+		// gl.glLineWidth(defaultLine);
+		// pathCounter += pause * speed;
+		// return reached;
 	}
 
 	// Draw DFS
