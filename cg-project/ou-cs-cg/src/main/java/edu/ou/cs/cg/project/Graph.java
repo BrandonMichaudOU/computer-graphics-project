@@ -116,7 +116,9 @@ public class Graph {
         if (end != -1) {
             nodes.get(end).toggleEnd();
         }// Update the end node
-        nodes.get(idx).toggleEnd();
+        if (idx >= 0 && idx < nodes.size()) {
+            nodes.get(idx).toggleEnd();
+        }
         end = idx;
     }
 
