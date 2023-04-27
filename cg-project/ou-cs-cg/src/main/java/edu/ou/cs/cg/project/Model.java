@@ -259,7 +259,7 @@ public final class Model
 					// If the click occurred inside the node, handle it
 					if (dist <= n.getRadius()) {
 						// If shift is down, set the current node to the end
-						if (shift) {
+						if (shift && currentMode.equals("Shortest-Path")) {
 							setEnd(i);
 						}
 						// Otherwise set the current node to the start
