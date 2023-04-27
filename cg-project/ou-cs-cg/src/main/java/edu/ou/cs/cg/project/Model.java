@@ -355,7 +355,6 @@ public final class Model
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
 				pathType[0] = true;
-				path = new ArrayList<>();
 			}
 		});
     }

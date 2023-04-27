@@ -343,7 +343,6 @@ public final class View
 			// Draw a circle for the node
             Point2D.Double p = n.getPoint();
             fillCircle(gl, p.x + pan.x, p.y + pan.y, n.getRadius());
-            edgeCircle(gl, p.x + pan.x, p.y + pan.y, n.getRadius());
         }
     }
 
@@ -540,7 +539,7 @@ public final class View
 
 		// If the algorithm was not allowed to complete, draw the previous node in black
 		if (previous != null && broke) {
-			setColor(gl, 0, 0, 0);
+			setColor(gl, 75, 0, 130);
 			fillCircle(gl, previous.getX(), previous.getY(), previous.getRadius());
 		}
 

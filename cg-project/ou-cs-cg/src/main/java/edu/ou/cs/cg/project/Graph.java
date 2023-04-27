@@ -102,7 +102,7 @@ public class Graph {
     // Set the end node
     public void setEnd(int idx) {
         // If the new index is currently the start, remove start and set end
-        if (start == idx) {
+        if (idx != -1 && start == idx) {
             nodes.get(start).toggleStart();
             start = -1;
         }
