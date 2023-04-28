@@ -1,20 +1,11 @@
 package edu.ou.cs.cg.project;
 
-//import java.lang.*;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.*;
 
 import com.jogamp.opengl.*;
 
-//******************************************************************************
-
-/**
- * The <CODE>Model</CODE> class.
- *
- * @author  Chris Weaver
- * @version %I%, %G%
- */
 public final class Model
 {
 	//**********************************************************************
@@ -36,6 +27,7 @@ public final class Model
 	private double speed;
 	private int pause;
 	private String currentMode;
+	private boolean weights;
 
 	// Projection variables
 	private double xmin;
@@ -60,6 +52,7 @@ public final class Model
 		speed = 1;
 		pause = 1;
 		currentMode = "";
+		weights = false;
 		xmin = 0;
 		xmax = 1280;
 		ymin = 0;
@@ -89,6 +82,12 @@ public final class Model
     public List<Edge>	getEdges()
 	{
 		return graph.getEdges();
+	}
+
+	// Get the graph
+	public Graph		getGraph()
+	{
+		return graph;
 	}
 
 	// Get the path
@@ -139,6 +138,12 @@ public final class Model
 		return pause;
 	}
 
+	// Get the weight toggle
+	public boolean getWeights()
+	{
+		return weights;
+	}
+
 	// Get the screen projection
 	public double[] getProjection()
 	{
@@ -154,7 +159,14 @@ public final class Model
 	public void defaultGraph(){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.defaultGraph();
 				}
 			}
@@ -165,7 +177,14 @@ public final class Model
 	public void randomGraph(){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.randomGraph();
 				}
 			}
@@ -176,6 +195,9 @@ public final class Model
 	public void changeMode(String mode){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
+				if (!mode.equals("Shortest-Path")) {
+					setEnd(-1);
+				}
 				currentMode = mode;
 			}
 		});
@@ -185,7 +207,14 @@ public final class Model
 	public void addNode(Node n) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addNode(n);
 				}
 			}
@@ -196,7 +225,14 @@ public final class Model
 	public void addEdge(Edge e) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addEdge(e);
 				}
 			}
@@ -207,7 +243,14 @@ public final class Model
     public void addNodes(List<Node> nodes) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addNodes(nodes);
 				}
 			}
@@ -218,7 +261,14 @@ public final class Model
 	public void addEdges(List<Edge> edges) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addEdges(edges);
 				}
 			}
@@ -229,10 +279,16 @@ public final class Model
     public void setStart(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-                if (path != null) {
-                    return;
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+                if (!block) {
+                    graph.setStart(idx);
                 }
-				graph.setStart(idx);
 			}
 		});
     }
@@ -320,14 +376,29 @@ public final class Model
 		});
     }
 
+	// Toggle the weight drawing
+	public void toggleWeights() {
+        view.getCanvas().invoke(false, new BasicUpdater() {
+			public void	update(GL2 gl) {
+				weights = !weights;
+			}
+		});
+    }
+
 	// Set the end node
 	public void setEnd(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-                if (path != null) {
-                    return;
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+                if (!block) {
+                    graph.setEnd(idx);
                 }
-				graph.setEnd(idx);
 			}
 		});
     }
@@ -346,8 +417,9 @@ public final class Model
     public void BFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[0] = true;
-				path = graph.BFS();
+				if (graph.start != -1 && graph.nodes.size() > 0) {
+					pathType[0] = true;
+				}
 			}
 		});
     }
@@ -356,8 +428,9 @@ public final class Model
 	public void DFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[1] = true;
-				path = graph.DFS();
+				if (graph.start != -1 && graph.nodes.size() > 0) {
+					pathType[1] = true;
+				}
 			}
 		});
     }
@@ -366,7 +439,9 @@ public final class Model
 	public void shortestPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[2] = true;
+				if (graph.start != -1 && graph.end != -1 && graph.nodes.size() > 0) {
+					pathType[2] = true;
+				}
 				path = graph.shortestPathWrapper();
 			}
 		});
@@ -380,6 +455,7 @@ public final class Model
 					pathType[i] = false;
 				}
 				path = null;
+				view.pathCounter = 0;
 			}
 		});
     }
@@ -460,30 +536,6 @@ public final class Model
 
 		public abstract void	update(double[] p);
 	}
-
-	//**********************************************************************
-	// Coordinate Translators
-	//**********************************************************************
-
-	public Point2D.Double translateCoordsToScene(Point2D.Double p) {
-		return new Point2D.Double((p.x + 1) * 640, (p.y + 1) * 360);
-	}
-
-	public Point2D.Double translateSceneToCoords(Point2D.Double p) {
-		return new Point2D.Double((p.x / 640) - 1, (p.y / 360) - 1);
-	}
-
-	public Point2D.Double translateScreenToCoords(Point p) {
-		double w = view.getWidth();
-		double h = view.getHeight();
-		return new Point2D.Double((p.getX() / w * 2) - 1, ((h - p.getY()) / h * 2) - 1);
-	}
-
-    public Point2D.Double translateScreenToScene(Point p) {
-        double w = view.getWidth();
-		double h = view.getHeight();
-		return new Point2D.Double((p.getX() / w) * 1280, ((h - p.getY()) / h ) * 720);
-    }
 }
 
 //******************************************************************************

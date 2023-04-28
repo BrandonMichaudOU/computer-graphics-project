@@ -1,7 +1,5 @@
 package edu.ou.cs.cg.project;
 
-import java.awt.geom.Point2D;
-
 // Represents a node
 public class Node {
     // Declare variables to hold position and state of node
@@ -16,11 +14,6 @@ public class Node {
         this.x = x;
         this.y = y;
         this.r = r;
-    }
-
-    // Get the center of node
-    public Point2D.Double getPoint() {
-        return new Point2D.Double(x, y);
     }
 
     // Get the x-coordinate

@@ -11,10 +11,10 @@ import java.util.Random;
 // Represents a graph
 public class Graph {
     // Declare variables to hold state of graph
-    private ArrayList<Node> nodes;
-    private ArrayList<Edge> edges;
-    private int start = -1;
-    private int end = -1;
+    public ArrayList<Node> nodes;
+    public ArrayList<Edge> edges;
+    public int start = -1;
+    public int end = -1;
 
     // Random number generator
     private Random rand = new Random();
@@ -102,12 +102,12 @@ public class Graph {
     // Set the end node
     public void setEnd(int idx) {
         // If the new index is currently the start, remove start and set end
-        if (start == idx) {
+        if (idx != -1 && start == idx) {
             nodes.get(start).toggleStart();
             start = -1;
         }
         // If the new index is already the end, remove it
-        if (end == idx) {
+        if (idx != -1 && end == idx) {
             nodes.get(end).toggleEnd();
             end = -1;
             return;
@@ -116,7 +116,9 @@ public class Graph {
         if (end != -1) {
             nodes.get(end).toggleEnd();
         }// Update the end node
-        nodes.get(idx).toggleEnd();
+        if (idx >= 0 && idx < nodes.size()) {
+            nodes.get(idx).toggleEnd();
+        }
         end = idx;
     }
 
@@ -179,84 +181,6 @@ public class Graph {
 
         // Return the path
         return Collections.unmodifiableList(path);
-    }
-
-    // Perform depth first search on the graph
-    public List<SearchNode> DFS() {
-        // If the start is not specified or there are no nodes, return null
-        if (start == -1 || nodes.size() == 0) {
-            return null;
-        }
-
-        // Declare a variable holding the order of visited search nodes
-        ArrayList<SearchNode> path = new ArrayList<>();
-
-        // Create a search node for the start and add it to the path
-        SearchNode root = new SearchNode(getStart());
-        path.add(root);
-
-        // Create a list to hold seen and add root
-        ArrayList<Node> seen = new ArrayList<>();
-        seen.add(root.node);
-
-        // Perform recursive DFS
-        recursiveDFS(root, seen, path);
-        
-        // Return the path
-        return Collections.unmodifiableList(path);
-    }
-
-    // Recursive function for DFS
-    public void recursiveDFS(SearchNode n, List<Node> seen, List<SearchNode> path) {
-        // Get all the edges connected to the current node and an unseen node
-        List<Edge> unseenConnected = getUnseenConnected(n, seen);
-
-        // Recursively call method from unseen connected nodes
-        for (Edge e: unseenConnected) {
-            // If the current nodes is the first node of the edge procede
-            if (n.node.equals(e.getNode1()) && !containsNode(seen, e.getNode2())) {
-                // Create a search node for the unseen node and add it to the path and seen
-                SearchNode child = new SearchNode(e.getNode2());
-                child.parent = n;
-                child.depth = child.parent.depth + 1;
-                path.add(child);
-                seen.add(e.getNode2());
-
-                // Recurse from new search node
-                recursiveDFS(child, seen, path);
-            }
-            // If the current node is the second node of the edge procede
-            else if (!containsNode(seen, e.getNode1())) {
-                // Create a search node for the unseen node and add it to the path and seen
-                SearchNode child = new SearchNode(e.getNode1());
-                child.parent = n;
-                child.depth = child.parent.depth + 1;
-                path.add(child);
-                seen.add(e.getNode1());
-
-                // Recurse from new search node
-                recursiveDFS(child, seen, path);
-            }
-        }
-    }
-
-    // Get all the edges adjacent to a search node that connect to an unseen node
-    public List<Edge> getUnseenConnected(SearchNode n, List<Node> seen) {
-        // Create a variable to store the edges
-        ArrayList<Edge> connected = new ArrayList<>();
-
-        // Loop over each edge to see connects the given search node to an unseen node. If it does, add it
-        for (Edge e: edges) {
-            if (e.getNode1().equals(n.node) && !containsNode(seen, e.getNode2())) {
-                connected.add(e);
-            }
-            else if (e.getNode2().equals(n.node) && !containsNode(seen, e.getNode1())) {
-                connected.add(e);
-            }
-        }
-
-        // Return the connected edges
-        return connected;
     }
 
     // Find shortest path between start and end node
@@ -372,39 +296,6 @@ public class Graph {
         return path;
     }
 
-    // Find the connected search nodes to a given source that are in a given list
-    public List<SearchNode> getConnectedInList(SearchNode source, List<SearchNode> list) {
-        // Keep track of the connected search nodes in the list
-        ArrayList<SearchNode> connected = new ArrayList<>();
-
-        // Loop over every edge to see if it contains the source search node
-        for (Edge e: edges) {
-            // If the source search node is on front end, procede
-            if (e.getNode1().equals(source.node)) {
-                // Check if the back end search node is in list. If so add it
-                for (SearchNode sn: list) {
-                    if (sn.node.equals(e.getNode2())) {
-                        connected.add(sn);
-                        break;
-                    }
-                }
-            }
-            // If the source search node is on back end, procede
-            else if (e.getNode2().equals(source.node)) {
-                // Check if the front end search node is in list. If so add it
-                for (SearchNode sn: list) {
-                    if (sn.node.equals(e.getNode1())) {
-                        connected.add(sn);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Return list of connected search nodes in list
-        return connected;
-    }
-
     // Test if a node is in a given list
     public static boolean containsNode(List<Node> arr, Node n) {
         for (Node nod: arr) {
@@ -502,7 +393,6 @@ public class Graph {
 		}
 
         // Define the maximum number of edges in a graph
-        //int maxEdges = (((numNodes - 1) * (numNodes - 2)) / 2) + 1;
         int maxEdges = Math.min((((numNodes - 1) * (numNodes - 2)) / 2) + 1, numNodes * 2);
 
         // Define minimum number of edges to guarentee connected graph
@@ -521,7 +411,7 @@ public class Graph {
 
         // Find list of all nodes connected to first node
         start = 0;
-        List<SearchNode> testConnected = DFS();
+        List<SearchNode> testConnected = BFS();
 
         // Continue making edges until graph is connected or generated minimum number has not been met
         int k = 0;
@@ -631,7 +521,7 @@ public class Graph {
             }
 
             // Test the graph to see if it is connected
-            testConnected = DFS();
+            testConnected = BFS();
 		}
 
         // Clear start node from connectivity tests
