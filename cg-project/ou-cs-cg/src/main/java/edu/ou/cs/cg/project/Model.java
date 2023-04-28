@@ -159,7 +159,14 @@ public final class Model
 	public void defaultGraph(){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.defaultGraph();
 				}
 			}
@@ -170,7 +177,14 @@ public final class Model
 	public void randomGraph(){
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void update(GL2 gl){
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.randomGraph();
 				}
 			}
@@ -193,7 +207,14 @@ public final class Model
 	public void addNode(Node n) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addNode(n);
 				}
 			}
@@ -204,7 +225,14 @@ public final class Model
 	public void addEdge(Edge e) {
 		view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addEdge(e);
 				}
 			}
@@ -215,7 +243,14 @@ public final class Model
     public void addNodes(List<Node> nodes) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addNodes(nodes);
 				}
 			}
@@ -226,7 +261,14 @@ public final class Model
 	public void addEdges(List<Edge> edges) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				if (path == null) {
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+				if (!block) {
 					graph.addEdges(edges);
 				}
 			}
@@ -237,10 +279,16 @@ public final class Model
     public void setStart(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-                if (path != null) {
-                    return;
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+                if (!block) {
+                    graph.setStart(idx);
                 }
-				graph.setStart(idx);
 			}
 		});
     }
@@ -332,10 +380,16 @@ public final class Model
 	public void setEnd(int idx) {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-                if (path != null) {
-                    return;
+				boolean block = false;
+				for (boolean b: pathType) {
+					if (b) {
+						block = true;
+						break;
+					}
+				}
+                if (!block) {
+                    graph.setEnd(idx);
                 }
-				graph.setEnd(idx);
 			}
 		});
     }
@@ -354,7 +408,9 @@ public final class Model
     public void BFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[0] = true;
+				if (graph.start != -1 && graph.nodes.size() > 0) {
+					pathType[0] = true;
+				}
 			}
 		});
     }
@@ -363,8 +419,9 @@ public final class Model
 	public void DFS() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[1] = true;
-				path = graph.DFS();
+				if (graph.start != -1 && graph.nodes.size() > 0) {
+					pathType[1] = true;
+				}
 			}
 		});
     }
@@ -373,7 +430,9 @@ public final class Model
 	public void shortestPath() {
         view.getCanvas().invoke(false, new BasicUpdater() {
 			public void	update(GL2 gl) {
-				pathType[2] = true;
+				if (graph.start != -1 && graph.end != -1 && graph.nodes.size() > 0) {
+					pathType[2] = true;
+				}
 				path = graph.shortestPathWrapper();
 			}
 		});
