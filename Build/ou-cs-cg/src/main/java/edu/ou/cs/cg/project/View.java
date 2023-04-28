@@ -763,7 +763,7 @@ public final class View
 
 				// Draw the parent node in green
 				setColor(gl, 0, 255, 0);
-				fillCircle(gl, path.get(i).parent.node.getX(), path.get(i).parent.node.getY(), path.get(i).parent.node.getRadius());
+				fillCircle(gl, path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y, path.get(i).parent.node.getRadius());
 
 				// If the node is the end, set the color to purple
 				if (path.get(i).node.isEnd()) {
@@ -773,7 +773,7 @@ public final class View
 				else {
 					setColor(gl, 255, 0, 0);
 				}
-				fillCircle(gl, path.get(i).node.getX(), path.get(i).node.getY(), path.get(i).node.getRadius());
+				fillCircle(gl, path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y, path.get(i).node.getRadius());
 			}
 			// If this edge is not the last one, draw the whole thing
 			else {
@@ -789,8 +789,8 @@ public final class View
 
 				// Draw both nodes in green
 				setColor(gl, 0, 255, 0);
-				fillCircle(gl, path.get(i).parent.node.getX(), path.get(i).parent.node.getY(), path.get(i).parent.node.getRadius());
-				fillCircle(gl, path.get(i).node.getX(), path.get(i).node.getY(), path.get(i).node.getRadius());
+				fillCircle(gl, path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y, path.get(i).parent.node.getRadius());
+				fillCircle(gl, path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y, path.get(i).node.getRadius());
 			}
 		}
 		
