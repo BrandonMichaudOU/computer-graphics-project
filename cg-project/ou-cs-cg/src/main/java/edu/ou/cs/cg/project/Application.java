@@ -1,27 +1,13 @@
 package edu.ou.cs.cg.project;
 
-//import java.lang.*;
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.*;
 
-import java.awt.Button;
 import java.awt.Component;
 
-//******************************************************************************
-
-/**
- * The <CODE>Application</CODE> class.<P>
- *
- * @author  Chris Weaver
- * @version %I%, %G%
- */
 public final class Application
 	implements Runnable
 {

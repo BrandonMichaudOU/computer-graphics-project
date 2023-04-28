@@ -1,18 +1,8 @@
 package edu.ou.cs.cg.project;
 
-//import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Point2D;
 
-//******************************************************************************
-
-/**
- * The <CODE>MouseHandler</CODE> class.<P>
- *
- * @author  Chris Weaver
- * @version %I%, %G%
- */
 public final class MouseHandler extends MouseAdapter
 {
 	//**********************************************************************

@@ -1,6 +1,5 @@
 package edu.ou.cs.cg.project;
 
-//import java.lang.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,14 +19,6 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import edu.ou.cs.cg.utilities.Utilities;
 
-//******************************************************************************
-
-/**
- * The <CODE>View</CODE> class.<P>
- *
- * @author  Chris Weaver
- * @version %I%, %G%
- */
 public final class View
 	implements GLEventListener
 {
@@ -56,12 +47,6 @@ public final class View
 
 	private TextRenderer				renderer;
 	private final FPSAnimator			animator;
-	private int						k;	// Frame counter
-
-    private boolean init = false;
-
-	private float				defaultLine = 1.0f;		// normal thickness
-	private float				edgeLine = 2.5f;		// edge thickness
 
 	private final Model				model;
 
@@ -72,14 +57,16 @@ public final class View
 	// Private Scene Members
 	//**********************************************************************
 
-	private float				defaultline = 1.0f;		// normal thickness
-	private float				thickline = 2.5f;		// bold thickness
+	// Edge thicknesses
+	private float				edgeLine = 2.5f;
 
+	// Animation counters
     public double               pathCounter = 0;
 	public int					numEdgesToDraw = 0;
 	public double				proportionOfFinalEdge = 0;
 	public int					numDrawn = 0;
 
+	// Model animation variables
 	private Point2D.Double 		pan;
 	private double				zoom;
 	private double				speed;
@@ -94,7 +81,6 @@ public final class View
 		this.canvas = canvas;
 
 		// Initialize rendering
-		k = 0;
 		canvas.addGLEventListener(this);
 
 		// Initialize model (scene data and parameter manager)
@@ -192,8 +178,6 @@ public final class View
 
 	private void	update(GLAutoDrawable drawable)
 	{
-		k++;							// Advance animation counter
-
 		// Update the model animation variables
 		pan = model.getPan();
 		zoom = model.getZoom();
@@ -208,18 +192,21 @@ public final class View
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);	// White background
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);			// Clear the buffer
 
-		setProjection(gl);							// Based off model
+		// Set projection based on model
+		setProjection(gl);
         
-		// Draw the graph without any animation
+		// Draw the edges
         drawEdges(gl);
+
+		if (model.getWeights()) {
+			drawWeights(gl);
+		}
 
 		// Draw the nodes
         drawNodes(gl);
 
 		// Get the path type from the model
 		boolean[] pathType = model.getPathType();
-
-		List<SearchNode> reached = null;
 
 		// If the path is BFS, draw it
 		if (pathType[0]) {
@@ -232,15 +219,8 @@ public final class View
 		// If the path is shortest path, draw it
 		else if (pathType[2]) {
 			List<SearchNode> path = model.getPath();
-			reached = drawShortestPath(gl, path);
+			drawShortestPath(gl, path);
 		}
-
-		// Draw the reached nodes
-        if (reached != null) {
-            drawReached(gl, reached);
-        }
-
-		drawMode(drawable);						// Draw mode text
 
 		gl.glFlush();								// Finish and display
 	}
@@ -279,21 +259,18 @@ public final class View
         setColor(gl, 0, 0, 0);
         gl.glLineWidth(edgeLine / (float) zoom);
 
-		// Draw each edge in the model
+		// Draw a line for each edge in the model
         gl.glBegin(GL.GL_LINES);
         for (Edge e: model.getEdges()) {
             gl.glVertex2d(e.getNode1().getX() + pan.x, e.getNode1().getY() + pan.y);
             gl.glVertex2d(e.getNode2().getX() + pan.x, e.getNode2().getY() + pan.y);
         }
         gl.glEnd();
-
-		// Reset the line width
-        gl.glLineWidth(defaultLine);
     }
 
+	// Draw the weights for each edge
 	private void drawWeights(GL2 gl) {
-		
-
+		// Loop over each edge
 		for (Edge e: model.getEdges()) {
 			// Get the vector of the edge
 			double vx = e.getNode2().getX() - e.getNode1().getX();
@@ -304,21 +281,23 @@ public final class View
 			double mx = (e.getNode2().getX() + e.getNode1().getX()) / 2.0;
 			double my = (e.getNode2().getY() + e.getNode1().getY()) / 2.0;
 
+			// Find the normal vector offset
 			double offset = 15;
 			double px = (-vy / vs) * offset;
 			double py = (vx / vs) * offset;
 
+			// Calculate position of weight text in scene coordinates
 			double x = mx + px;
 			double y = my + py;
 
-			Point2D.Double pan = model.getPan();
-			double panx = pan.getX();
-			double pany = pan.getY();
-			x += panx;
-			y += pany;
+			// Adjust the coordinates for the pan
+			x += pan.x;
+			y += pan.y;
 
+			// Get the position of weight text in screen coordinates
 			double[] newPoints = Utilities.mapSceneToView(gl, x, y, 0.0);
 
+			// Draw the weight in black
 			renderer.beginRendering(w, h);
 			renderer.setColor(0.f, 0.f, 0.f, 1.0f);
 			renderer.draw("" + e.getWeight(), (int)newPoints[0], (int)newPoints[1]);
@@ -344,19 +323,24 @@ public final class View
             }
 
 			// Draw a circle for the node
-            Point2D.Double p = n.getPoint();
-            fillCircle(gl, p.x + pan.x, p.y + pan.y, n.getRadius());
+            fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
         }
     }
 
+	// Define method that determines if a collection contains a node
 	public boolean contains(Collection<Node> list, Node node) {
+		// Loop over collection
 		for (Node n: list) {
+			// If the given node is the same as the current node, return true
 			if (n.equals(node)) {
 				return true;
 			}
 		}
+
+		// Return false if the given node was not found
 		return false;
 	}
+
 	// Draw BFS
 	public void drawBFS(GL2 gl) {
 		// Get the graph
@@ -384,7 +368,7 @@ public final class View
 		numDrawn = 0;
 
 		// Set the width of edges
-		gl.glLineWidth(edgeLine);
+		gl.glLineWidth(edgeLine / (float) zoom);
 
 		// Keep track of the BFS state
 		Node previous = null;
@@ -395,9 +379,9 @@ public final class View
             // Get the front of the queue
             Node n = q.poll();
 
-			// Draw the node, indicating it has been visited
+			// Draw the current node in purple
 			setColor(gl, 0, 255, 255);
-			fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+			fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 
             // Loop over each edge to find if it is adjacent to current node
             for (Edge e: graph.edges){
@@ -426,17 +410,16 @@ public final class View
 						else if (!contains(seen, n2)) {
 							setColor(gl, 255, 0, 0);
 						}
-						// If the connected node had been seen, set the color to cyan
+						// If the connected node has been seen, set the color to cyan
 						else {
 							setColor(gl, 0, 255, 255);
 						}
 
 						// Draw the connected node
-						fillCircle(gl, n2.getX(), n2.getY(), n2.getRadius());
+						fillCircle(gl, n2.getX() + pan.x, n2.getY() + pan.y, n2.getRadius());
 					}
 					// If this edge is not the last one to be drawn, draw it if the connected node has not been seen
 					else {
-						// Draw the edge if the connected node has not been seen
 						if (!contains(seen, n2)) {
 							// Draw the whole edge in green
 							setColor(gl, 0, 255, 0);
@@ -447,17 +430,18 @@ public final class View
 
 							// Draw the current node in cyan
 							setColor(gl, 0, 255, 255);
-							fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+							fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 
 							// Draw the connected node in purple
 							setColor(gl, 255, 0, 255);
-							fillCircle(gl, n2.getX(), n2.getY(), n2.getRadius());
+							fillCircle(gl, n2.getX() + pan.x, n2.getY() + pan.y, n2.getRadius());
 
 							// Add the connected node to the q and seen nodes
 							q.add(n2);
 							seen.add(n2);
 						}
 					}
+
 					// Indicate another edge has been drawn
 					++numDrawn;
 
@@ -492,17 +476,16 @@ public final class View
 						else if (!contains(seen, n1)) {
 							setColor(gl, 255, 0, 0);
 						}
-						// If the connected node had been seen, set the color to cyan
+						// If the connected node has been seen, set the color to cyan
 						else {
 							setColor(gl, 0, 255, 255);
 						}
 
 						// Draw the connected node
-						fillCircle(gl, n1.getX(), n1.getY(), n1.getRadius());
+						fillCircle(gl, n1.getX() + pan.x, n1.getY() + pan.y, n1.getRadius());
 					}
 					// If this edge is not the last one to be drawn, draw it if the connected node has not been seen
 					else {
-						// Draw the edge if the connected node has not been seen
 						if (!contains(seen, n1)) {
 							// Draw the whole edge in green
 							setColor(gl, 0, 255, 0);
@@ -513,17 +496,18 @@ public final class View
 
 							// Draw the current node in cyan
 							setColor(gl, 0, 255, 255);
-							fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+							fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 
 							// Draw the connected node in purple
 							setColor(gl, 255, 0, 255);
-							fillCircle(gl, n1.getX(), n1.getY(), n1.getRadius());
+							fillCircle(gl, n1.getX() + pan.x, n1.getY() + pan.y, n1.getRadius());
 
 							// Add the connected node to the q and seen nodes
 							q.add(n1);
 							seen.add(n1);
 						}
 					}
+
 					// Indicate another edge has been drawn
 					++numDrawn;
 
@@ -539,10 +523,10 @@ public final class View
 			previous = n;
         }
 
-		// If the algorithm was not allowed to complete, draw the previous node in black
+		// If the algorithm was not allowed to complete, draw the previous node in dark purple
 		if (previous != null && broke) {
 			setColor(gl, 75, 0, 130);
-			fillCircle(gl, previous.getX(), previous.getY(), previous.getRadius());
+			fillCircle(gl, previous.getX() + pan.x, previous.getY() + pan.y, previous.getRadius());
 		}
 
 		// Update the path counter
@@ -551,19 +535,22 @@ public final class View
 
 	// Recursive function for DFS
     public void recursiveDFS(GL2 gl, Node n, List<Node> seen, List<Node> finished, Graph graph) {
+		// If the edge limit is not reached, draw the current node in purple
 		if (numDrawn < numEdgesToDraw) {
 			setColor(gl, 255, 0, 255);
-			fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+			fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 		}
-        // Recursively call method from unseen connected nodes
+
+        // Loop over edges to find connected nodes
         for (Edge e: graph.edges) {
-			// If all edges have been drawn, break out of loop
+			// If all edge limit has been reached, return
 			if (numDrawn >= numEdgesToDraw) {
 				return;
 			}
-            // If the current nodes is the first node of the edge procede
+
+            // If the current node is the first node of the edge procede
             if (n.equals(e.getNode1())) {
-                // Create a search node for the unseen node and add it to the path and seen
+                // Get the connected node
 				Node n2 = e.getNode2();
                 
 				// If this edge is the last one to be drawn, draw a portion of it
@@ -578,10 +565,11 @@ public final class View
 						n.getY() + yVector * proportionOfFinalEdge + pan.y);
 					gl.glEnd();
 
+					// Draw the current node in purple
 					setColor(gl, 255, 0, 255);
-					fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+					fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 
-					// If the connected node is in the queue, set the color to purple
+					// If the connected node has finished, set the color to cyan
 					if (contains(finished, n2)) {
 						setColor(gl, 0, 255, 255);
 					}
@@ -589,13 +577,13 @@ public final class View
 					else if (!contains(seen, n2)) {
 						setColor(gl, 255, 0, 0);
 					}
-					// If the connected node had been seen, set the color to cyan
+					// If the connected node had been seen, set the color to purple
 					else {
 						setColor(gl, 255, 0, 255);
 					}
 
 					// Draw the connected node
-					fillCircle(gl, n2.getX(), n2.getY(), n2.getRadius());
+					fillCircle(gl, n2.getX() + pan.x, n2.getY() + pan.y, n2.getRadius());
 				}
 				// If this edge is not the last one to be drawn, draw it if the connected node has not been seen
 				else {
@@ -607,28 +595,25 @@ public final class View
 						gl.glVertex2d(n2.getX() + pan.x, n2.getY() + pan.y);
 						gl.glEnd();
 
+						// Draw both ends of the edge in purple
 						setColor(gl, 255, 0, 255);
-						fillCircle(gl, n.getX(), n.getY(), n.getRadius());
-						setColor(gl, 255, 0, 255);
-						fillCircle(gl, n2.getX(), n2.getY(), n2.getRadius());
+						fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
+						fillCircle(gl, n2.getX() + pan.x, n2.getY() + pan.y, n2.getRadius());
 					}
 				}
+
 				// Indicate another edge has been drawn
 				++numDrawn;
 
-				// // If all edges have been drawn, break out of loop
-				// if (numDrawn >= numEdgesToDraw) {
-				// 	return;
-				// }
+				// If the connected node has not been seen, recursively call function on it
 				if (!contains(seen, n2)) {
-					// Recurse from new search node
 					seen.add(n2);
 					recursiveDFS(gl, n2, seen, finished, graph);
 				}
             }
             // If the current node is the second node of the edge procede
             else if (n.equals(e.getNode2())) {
-                // Create a search node for the unseen node and add it to the path and seen
+                // Get the connected node
 				Node n1 = e.getNode1();
                 
 				// If this edge is the last one to be drawn, draw a portion of it
@@ -643,10 +628,11 @@ public final class View
 						n.getY() + yVector * proportionOfFinalEdge + pan.y);
 					gl.glEnd();
 
+					// Draw the current node in purple
 					setColor(gl, 255, 0, 255);
-					fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+					fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 
-					// If the connected node is in the queue, set the color to purple
+					// If the connected node has finished, set the color to cyan
 					if (contains(finished, n1)) {
 						setColor(gl, 0, 255, 255);
 					}
@@ -654,13 +640,13 @@ public final class View
 					else if (!contains(seen, n1)) {
 						setColor(gl, 255, 0, 0);
 					}
-					// If the connected node had been seen, set the color to cyan
+					// If the connected node had been seen, set the color to purple
 					else {
 						setColor(gl, 255, 0, 255);
 					}
 
 					// Draw the connected node
-					fillCircle(gl, n1.getX(), n1.getY(), n1.getRadius());
+					fillCircle(gl, n1.getX() + pan.x, n1.getY() + pan.y, n1.getRadius());
 				}
 				// If this edge is not the last one to be drawn, draw it if the connected node has not been seen
 				else {
@@ -672,38 +658,35 @@ public final class View
 						gl.glVertex2d(n1.getX() + pan.x, n1.getY() + pan.y);
 						gl.glEnd();
 
+						// Draw the endpoints of the edge in purple
 						setColor(gl, 255, 0, 255);
-						fillCircle(gl, n.getX(), n.getY(), n.getRadius());
-						setColor(gl, 255, 0, 255);
-						fillCircle(gl, n1.getX(), n1.getY(), n1.getRadius());
+						fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
+						fillCircle(gl, n1.getX() + pan.x, n1.getY() + pan.y, n1.getRadius());
 					}
 				}
+
 				// Indicate another edge has been drawn
 				++numDrawn;
 
-				// // If all edges have been drawn, break out of loop
-				// if (numDrawn >= numEdgesToDraw) {
-				// 	return;
-				// }
-
+				// If the connected node has not been seen, recursively call function on it
 				if (!contains(seen, n1)) {
-					// Recurse from new search node
 					seen.add(n1);
 					recursiveDFS(gl, n1, seen, finished, graph);
 				}
             }
         }
 
+		// If the current node finished, draw it in cyan
 		if (numDrawn < numEdgesToDraw) {
 			finished.add(n);
 			setColor(gl, 0, 255, 255);
-			fillCircle(gl, n.getX(), n.getY(), n.getRadius());
+			fillCircle(gl, n.getX() + pan.x, n.getY() + pan.y, n.getRadius());
 		}
     }
 
 	// Draw DFS
 	public void drawDFS(GL2 gl) {
-
+		// Get the graph
 		Graph graph = model.getGraph();
 
 		// If the start is not specified or there are no nodes, return null
@@ -711,13 +694,14 @@ public final class View
             return;
         }
 
-        // Create a search node for the start and add it to the path
+        // Get the start node
         Node root = graph.getStart();
 
-        // Create a list to hold seen and add root
+        // Create a list to hold seen nodes and add root
         ArrayList<Node> seen = new ArrayList<>();
         seen.add(root);
 
+		// Create a list to hold finished nodes
 		ArrayList<Node> finished = new ArrayList<>();
 
 		// Get number of edges to draw
@@ -728,74 +712,21 @@ public final class View
 		numDrawn = 0;
 
 		// Set the width of edges
-		gl.glLineWidth(edgeLine);
+		gl.glLineWidth(edgeLine / (float) zoom);
 
         // Perform recursive DFS
         recursiveDFS(gl, root, seen, finished, graph);
 
 		// Update the path counter
 		pathCounter += pause * speed;
-
-
-
-
-		
-		// // Declare array of reached nodes
-		// ArrayList<SearchNode> reached = new ArrayList<>();
-
-		// // Find number of nodes to draw
-		// int numNodesToDraw = ((int) pathCounter / 121) + 1;
-		// double proportionOfFinalEdge = ((int) pathCounter % 121) / 120.0;
-
-		// // Declare variables for cyan to purple gradient
-		// int maxDepth = path.get(path.size() - 1).depth - 1;
-		// int rgbIncrement = 255 / maxDepth;
-		// int[] nodeColor = {0, 255, 255};
-		
-		// gl.glLineWidth(edgeLine);				// set the line width to the default
-		// gl.glBegin(GL.GL_LINES);
-		// for (int i = 1, j = 1; i < numNodesToDraw; ++i, ++j) {
-		// 	if (j >= path.size()) {
-		// 		break;
-		// 	}
-		// 	else if (i == numNodesToDraw - 1) {
-		// 		int depth = path.get(i).depth;
-		// 		setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-		// 		path.get(i).parent.isLeaf = false;
-		// 		gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-		// 		double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
-		// 		double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
-		// 		gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
-		// 			path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
-		// 	}
-		// 	else {
-		// 		int depth = path.get(i).depth;
-		// 		setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-		// 		path.get(i).parent.isLeaf = false;
-		// 		gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
-		// 		gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
-		// 		reached.add(path.get(i));
-		// 	}
-		// }
-		// gl.glEnd();
-		// gl.glLineWidth(defaultLine);
-		// pathCounter += pause * speed;
-		// return reached;
 	}
 
 	// Draw shortest path
-	public List<SearchNode> drawShortestPath(GL2 gl, List<SearchNode> path) {
-		// int i = 0;
-		// for (SearchNode sn: path) {
-		// 	System.out.println("Path[" + i + "] = (" + sn.node.getX() + ", " + sn.node.getY() + ")");
-		// 	++i;
-		// }
+	public void drawShortestPath(GL2 gl, List<SearchNode> path) {
+		// If the path is null or is empty, return
 		if (path == null || path.size() == 0) {
-			return null;
+			return;
 		}
-		drawWeights(gl);
-		// Declare array of reached nodes
-		ArrayList<SearchNode> reached = new ArrayList<>();
 
 		// Find number of nodes to draw
 		numEdgesToDraw = ((int) pathCounter / 121) + 2;
@@ -806,107 +737,65 @@ public final class View
 		int rgbIncrement = 255 / maxDepth;
 		int[] nodeColor = {0, 255, 255};
 		
-		gl.glLineWidth(edgeLine);				// set the line width to the default
-		gl.glBegin(GL.GL_LINES);
-		for (int i = 1, j = 1; i < numEdgesToDraw; ++i, ++j) {
-			if (j >= path.size()) {
+		// Set the edge width
+		gl.glLineWidth(edgeLine / (float) zoom);
+
+		// Incrementally draw the path
+		for (int i = 1; i < numEdgesToDraw; ++i) {
+			// If the index is larger than the size, break
+			if (i >= path.size()) {
 				break;
 			}
+			// If this edge is the last one, draw a portion of it
 			else if (i == numEdgesToDraw - 1) {
+				// Get the depth of current Search Node and find the color based off of it
 				int depth = path.get(i).depth;
 				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-				path.get(i).isLeaf = false;
+
+				// Draw the portion of the edge
+				gl.glBegin(GL.GL_LINES);
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				double xVector = path.get(i).node.getX() - path.get(i).parent.node.getX();
 				double yVector = path.get(i).node.getY() - path.get(i).parent.node.getY();
 				gl.glVertex2d(path.get(i).parent.node.getX() + xVector * proportionOfFinalEdge + pan.x, 
 					path.get(i).parent.node.getY() + yVector * proportionOfFinalEdge + pan.y);
+				gl.glEnd();
+
+				// Draw the parent node in green
+				setColor(gl, 0, 255, 0);
+				fillCircle(gl, path.get(i).parent.node.getX(), path.get(i).parent.node.getY(), path.get(i).parent.node.getRadius());
+
+				// If the node is the end, set the color to purple
+				if (path.get(i).node.isEnd()) {
+					setColor(gl, 255, 0, 255);
+				}
+				// If the node is not the end, set the color to red
+				else {
+					setColor(gl, 255, 0, 0);
+				}
+				fillCircle(gl, path.get(i).node.getX(), path.get(i).node.getY(), path.get(i).node.getRadius());
 			}
+			// If this edge is not the last one, draw the whole thing
 			else {
+				// Get the depth of current Search Node and find the color based off of it
 				int depth = path.get(i).depth;
 				setColor(gl, nodeColor[0] + (depth - 1) * rgbIncrement, nodeColor[1] - (depth - 1) * rgbIncrement, nodeColor[2]);
-				path.get(i).isLeaf = false;
+
+				// Draw the whole edge
+				gl.glBegin(GL.GL_LINES);
 				gl.glVertex2d(path.get(i).parent.node.getX() + pan.x, path.get(i).parent.node.getY() + pan.y);
 				gl.glVertex2d(path.get(i).node.getX() + pan.x, path.get(i).node.getY() + pan.y);
-				reached.add(path.get(i));
-			}
-		}
-		gl.glEnd();
-		gl.glLineWidth(defaultLine);
-		pathCounter += pause * speed;
-		return reached;
-	}
+				gl.glEnd();
 
-	// Draw a list of reached nodes
-    private void drawReached(GL2 gl, List<SearchNode> reached) {
-		// // Draw the reached nodes, if any
-		// if (reached.size() > 0) {
-		// 	// Declare variables for cyan to purple gradient
-		// 	int rgbIncrement = 255 / maxDepth;
-		// 	int[] nodeColor = {0, 255, 255};
-
-		// 	// Draw each node
-        // 	for (SearchNode n: reached) {
-		// 		// Set the color based on the depth
-		// 		int depth = n.depth;
-		// 		setColor(gl, nodeColor[0] + depth * rgbIncrement, nodeColor[1] - depth * rgbIncrement, nodeColor[2]);
-
-		// 		// Draw a circle for the reached node
-		// 		fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
-		// 		edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
-		// 	}
-		// }
-
-		// int maxDepth = 0;
-		// if (reached.size() > 0) {
-		// 	maxDepth = reached.get(reached.size() - 1).depth;
-		// }
-		// Draw each node
-
-		for (SearchNode n: reached) {
-			// if (n.depth == maxDepth) {
-			// 	setColor(gl, 255, 255, 0);
-			// }
-			if (n.isLeaf) {
-				setColor(gl, 255, 255, 0);
-			}
-			else {
+				// Draw both nodes in green
 				setColor(gl, 0, 255, 0);
+				fillCircle(gl, path.get(i).parent.node.getX(), path.get(i).parent.node.getY(), path.get(i).parent.node.getRadius());
+				fillCircle(gl, path.get(i).node.getX(), path.get(i).node.getY(), path.get(i).node.getRadius());
 			}
-
-			// Draw a circle for the reached node
-			fillCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
-			edgeCircle(gl, n.node.getX() + pan.x, n.node.getY() + pan.y, n.node.getRadius());
 		}
-    }
-
-	// Draw text
-	private void	drawMode(GLAutoDrawable drawable)
-	{
-		GL2		gl = drawable.getGL().getGL2();
-
-		renderer.beginRendering(w, h);
-
-		// Draw all text in black
-		renderer.setColor(0.f, 0.f, 0.f, 1.0f);
-
-		Point2D.Double	cursor = model.getCursor();
-
-		// Draw the cursor location
-		if (cursor != null)
-		{
-			String		sx = FORMAT.format(new Double(cursor.x));
-			String		sy = FORMAT.format(new Double(cursor.y));
-			String		s = "Pointer at (" + sx + "," + sy + ")";
-
-			renderer.draw(s, 2, 2);
-		}
-		else
-		{
-			renderer.draw("No Pointer", 2, 2);
-		}
-
-		renderer.endRendering();
+		
+		// Update the animation counter
+		pathCounter += pause * speed;
 	}
 
 	//**********************************************************************
@@ -930,24 +819,9 @@ public final class View
 		fillEllipse(gl, cx, cy, r, r);
 	}
 
-	// edges a circle defined by the center and radius
-	private void edgeCircle(GL2 gl, double cx, double cy, double r) {
-		edgeEllipse(gl, cx, cy, r, r);
-	}
-
 	// fills an ellipse defined by the center, x radius, and y radius
 	private void fillEllipse(GL2 gl, double cx, double cy, double a, double b) {
 		gl.glBegin(GL2.GL_POLYGON);
-		for (int i = 0; i < 32; i++) {
-			double angle = i * 2.0 * Math.PI / 32;
-			gl.glVertex2d(cx + (a * Math.cos(angle)), cy + (b * Math.sin(angle)));
-		}
-		gl.glEnd();
-	}
-
-	// edges an ellipse defined by the center, x radius, and y radius
-	private void edgeEllipse(GL2 gl, double cx, double cy, double a, double b) {
-		gl.glBegin(GL.GL_LINE_LOOP);
 		for (int i = 0; i < 32; i++) {
 			double angle = i * 2.0 * Math.PI / 32;
 			gl.glVertex2d(cx + (a * Math.cos(angle)), cy + (b * Math.sin(angle)));

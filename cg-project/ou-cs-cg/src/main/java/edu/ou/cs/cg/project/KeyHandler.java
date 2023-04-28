@@ -1,20 +1,11 @@
 package edu.ou.cs.cg.project;
 
-//import java.lang.*;
 import java.awt.Component;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 
 import edu.ou.cs.cg.utilities.Utilities;
 
-//******************************************************************************
-
-/**
- * The <CODE>KeyHandler</CODE> class.<P>
- *
- * @author  Chris Weaver
- * @version %I%, %G%
- */
 public final class KeyHandler extends KeyAdapter
 {
 	//**********************************************************************
@@ -84,8 +75,13 @@ public final class KeyHandler extends KeyAdapter
 				break;
 
 			// Pause the animation
-			case KeyEvent.VK_P:
+			case KeyEvent.VK_SPACE:
 				model.togglePause();;
+				break;
+
+			// Toggle weight drawing
+			case KeyEvent.VK_W:
+				model.toggleWeights();
 				break;
 
 			// Pan the scene
@@ -100,11 +96,6 @@ public final class KeyHandler extends KeyAdapter
 				break;
 			case KeyEvent.VK_UP:
 				model.setPan(currPan.x, currPan.y + a);
-				break;
-			
-			// Start the animation
-			case KeyEvent.VK_SPACE:
-				model.start();
 				break;
 		}
 	}
