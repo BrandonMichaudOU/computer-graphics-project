@@ -90,8 +90,10 @@ public final class Application
 		//panel2.add(label);
 		panel2.add(cb);
 		panel2.add(random);
+		panel2.setMaximumSize(panel2.getPreferredSize());
 		panel.add(panel2);
 		panel.add(canvas);
+		panel.setMaximumSize(panel.getPreferredSize());
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
